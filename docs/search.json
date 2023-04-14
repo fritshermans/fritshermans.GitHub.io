@@ -46,13 +46,13 @@
     "href": "index.html",
     "title": "Data science blog",
     "section": "",
-    "text": "Welcome to my ds blog.\n\n\n\n\n\n\n\n\n  \n\n\n\n\nDistributed hyperparameter tuning of machine learning models in Spark\n\n\n\n\n\n\n\n\n\n\n \n\n\n\n\n  \n\n\n\n\nHard to classify datapoints\n\n\n\n\n\n\n\n\n\n\n \n\n\n\n\nNo matching items"
+    "text": "Welcome to my ds blog.\n\n\n\n\n\n\n\n\n  \n\n\n\n\nAbout\n\n\n\n\n\n\n\n\n\n\n \n\n\n\n\n  \n\n\n\n\nDistributed hyperparameter tuning of machine learning models in Spark\n\n\n\n\n\n\n\n\n\n\n \n\n\n\n\n  \n\n\n\n\nHard to classify datapoints\n\n\n\n\n\n\n\n\n\n\n \n\n\n\n\nNo matching items"
   },
   {
     "objectID": "about.html",
     "href": "about.html",
     "title": "About",
     "section": "",
-    "text": "About this DS site"
+    "text": "I work as a data scientist for a financial institution. My main topics of interest are entity resolution, fuzzy matching, classification for imbalanced data problems and aggregation learning. Some of the libraries I created or co-created:\n\nDeduplipy - Entity resolution package (deduplipy.com, repo)\n\nSpark-Matcher - Entity resolution and fuzzy matching at scale in Spark (repo)\nPyMinHash - Minhashing in Python (repo)"
   }
 ]
