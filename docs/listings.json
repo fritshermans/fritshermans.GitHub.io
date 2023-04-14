@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/Deduplipy.html",
       "/posts/hyperparameter_tuning_spark.html"
     ]
   }
