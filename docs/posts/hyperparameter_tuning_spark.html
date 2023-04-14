@@ -231,22 +231,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pyspark.sql <span class="im">import</span> types <span class="im">as</span> T</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_hyperparameter_results(spark_session, base_clf, X, y, hyperpar_combinations, cv<span class="op">=</span><span class="dv">5</span>):</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    hyperpar_combinations_json <span class="op">=</span> [json.dumps(x) <span class="cf">for</span> x <span class="kw">in</span> hyperpar_combinations]</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    hyperpars_rdd <span class="op">=</span> spark_session.sparkContext.parallelize(hyperpar_combinations_json, <span class="bu">len</span>(hyperpar_combinations_json))</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    rdd_map_result <span class="op">=</span> hyperpars_rdd.<span class="bu">map</span>(<span class="kw">lambda</span> x: evaluate_clf(base_clf, x, X, y, cv))</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_hyperparameter_results(spark_session, base_clf, X, y, </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>                               hyperpar_combinations, cv<span class="op">=</span><span class="dv">5</span>):</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    hyperpar_combinations_json <span class="op">=</span> [json.dumps(x) <span class="cf">for</span> x <span class="kw">in</span> hyperpar_combinations]</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    hyperpars_rdd <span class="op">=</span> spark_session.sparkContext.parallelize(hyperpar_combinations_json, </span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>                                                           <span class="bu">len</span>(hyperpar_combinations_json))</span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    result_schema <span class="op">=</span> T.StructType([T.StructField(<span class="st">'hyperpars'</span>, T.StringType()),</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>                                  T.StructField(<span class="st">'mean_train_score'</span>, T.FloatType()),</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>                                  T.StructField(<span class="st">'mean_test_score'</span>, T.FloatType()),</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>                                  ])</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    result_sdf <span class="op">=</span> spark_session.createDataFrame(rdd_map_result, schema<span class="op">=</span>result_schema)</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> result_sdf.toPandas().sort_values(<span class="st">'mean_test_score'</span>, ascending<span class="op">=</span><span class="va">False</span>).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    result[<span class="st">'hyperpars'</span>] <span class="op">=</span> result[<span class="st">'hyperpars'</span>].<span class="bu">apply</span>(json.loads)</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> result</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    rdd_map_result <span class="op">=</span> hyperpars_rdd.<span class="bu">map</span>(<span class="kw">lambda</span> x: evaluate_clf(base_clf, x, X, y, cv))</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    result_schema <span class="op">=</span> T.StructType([T.StructField(<span class="st">'hyperpars'</span>, T.StringType()),</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>                                  T.StructField(<span class="st">'mean_train_score'</span>, T.FloatType()),</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>                                  T.StructField(<span class="st">'mean_test_score'</span>, T.FloatType()),</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>                                  ])</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    result_sdf <span class="op">=</span> spark_session.createDataFrame(rdd_map_result, schema<span class="op">=</span>result_schema)</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> (result_sdf.toPandas()</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>              .sort_values(<span class="st">'mean_test_score'</span>, ascending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>              .reset_index(drop<span class="op">=</span><span class="va">True</span>))</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    result[<span class="st">'hyperpars'</span>] <span class="op">=</span> result[<span class="st">'hyperpars'</span>].<span class="bu">apply</span>(json.loads)</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> result</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>In the first line we convert the dicts to json strings. Then, we parallelize these jsons by creating an RDD. The <code>evaluate_clf</code> can is mapped to this RDD. The schema of the result is defined as a StructType containing StructFields. Then a Spark dataframe is created that hold the results of our hyperparameter tuning. We convert this Spark dataframe to a Pandas dataframe in order to explore the results easily. As a last step we convert the jsons back to dicts.</p>
 </section>
@@ -267,8 +271,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>hyperpar_combinations <span class="op">=</span> create_hyperparameter_combinations(param_grid)</span>
 <span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> get_hyperparameter_results(spark, DecisionTreeClassifier(), X, y, hyperpar_combinations, cv<span class="op">=</span><span class="dv">5</span>)</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>results</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> get_hyperparameter_results(spark, DecisionTreeClassifier(), X, y, </span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>                                     hyperpar_combinations, cv<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>results</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="18">
 <div>
 
