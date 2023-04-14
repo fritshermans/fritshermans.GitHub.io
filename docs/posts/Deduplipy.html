@@ -169,7 +169,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<p><img src="Deduplipy_files/figure-html/bd9bb7e9-1-56aaf717-0970-440c-b3f9-0aec94500f2d.png" class="img-fluid"></p>
+<p><img src="Deduplipy_files/figure-html/765d894d-1-56aaf717-0970-440c-b3f9-0aec94500f2d.png" class="img-fluid"></p>
 <p>Deduplication or entity resolution is the task to combine different representations of the same real world entity. The Python package DedupliPy implements deduplication using active learning. Active learning allows for rapid training without having to provide a large, manually labelled dataset. In this post I demonstrate how the package works and show more advanced settings.</p>
 <section id="installation" class="level2">
 <h2 class="anchored" data-anchor-id="installation">Installation</h2>
@@ -447,23 +447,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>              <span class="st">'suburb'</span>:[token_set_ratio, token_sort_ratio], </span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>              <span class="st">'postcode'</span>:[ratio]}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>We choose our own set of rules for blocking which we define ourselves. We only apply this rule to the ‘name’ column.</p>
+<p>We choose a set of rules for blocking which we define ourselves. We only apply this rule to the ‘name’ column.</p>
 <div class="cell" data-execution_count="25">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> first_two_characters(x):</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> x[:<span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<ul>
-<li><code>interaction=True</code> makes the classifier include interaction features, e.g.&nbsp;<code>ratio('name') * token_set_ratio('suburb')</code>. When interaction features are included, the logistic regression classifier applies a L1 regularisation to prevent overfitting.</li>
-<li>We set <code>verbose=1</code> to get information on the progress and a distribution of scores</li>
-</ul>
-<div class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>myDedupliPy <span class="op">=</span> Deduplicator(field_info<span class="op">=</span>field_info, interaction<span class="op">=</span><span class="va">True</span>, rules<span class="op">=</span>{<span class="st">'name'</span>: [first_two_characters]}, verbose<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>When we set<code>interaction=True</code>, the classifier includes interaction features, e.g.&nbsp;<code>ratio('name') * token_set_ratio('suburb')</code>. When interaction features are included, the logistic regression classifier applies a L1 regularisation to prevent overfitting. We also set <code>verbose=1</code> to get information on the progress and a distribution of scores</p>
+<div class="cell" data-execution_count="27">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>myDedupliPy <span class="op">=</span> Deduplicator(field_info<span class="op">=</span>field_info, interaction<span class="op">=</span><span class="va">True</span>, </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>                           rules<span class="op">=</span>{<span class="st">'name'</span>: [first_two_characters]}, verbose<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Fit the <code>Deduplicator</code> by active learning; enter whether a pair is a match (y) or not (n). When the training is converged, you will be notified and you can finish training by entering ‘f’.</p>
 <div class="cell" data-scrolled="true" data-tags="[]">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>myDedupliPy.fit(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Based on the histogram of scores, we decide to ignore all pairs with a similarity probability lower than 0.1 when predicting:</p>
+<p>After fitting, the histogram of scores is shown. Based on this histogram, we decide to ignore all pairs with a similarity probability lower than 0.1 when predicting:</p>
 <p>Apply the trained <code>Deduplicator</code> on (new) data. The column <code>deduplication_id</code> is the identifier for a cluster. Rows with the same <code>deduplication_id</code> are found to be the same real world entity.</p>
 <div class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> myDedupliPy.predict(df, score_threshold<span class="op">=</span><span class="fl">0.1</span>)</span>
