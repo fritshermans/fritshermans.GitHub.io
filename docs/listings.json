@@ -2,9 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
-      "/about.html",
-      "/hyperparameter_tuning_spark.html",
-      "/hard_to_classify_datapoints.html"
+      "/posts/hyperparameter_tuning_spark.html"
     ]
   }
 ]
