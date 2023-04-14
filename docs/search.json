@@ -7,18 +7,11 @@
     "text": "|      |   y |   proba |\n|-----:|----:|--------:|\n|  460 |   1 |    0.83 |\n| 1287 |   1 |    0.84 |\n|  674 |   1 |    0.86 |\n| 1468 |   1 |    0.9  |\n|  916 |   1 |    0.93 |\n\n\n\n\n\n\n\n\n\n\n\ny\nproba\n\n\n\n\n460\n1\n0.83\n\n\n1287\n1\n0.84\n\n\n674\n1\n0.86\n\n\n1468\n1\n0.90\n\n\n916\n0\n0.93\n\n\n\n\n\n\n\n\n\n|      |   y |   proba |\n|-----:|----:|--------:|\n|  460 |   1 |    0.83 |\n| 1287 |   1 |    0.84 |\n|  674 |   1 |    0.86 |\n| 1468 |   1 |    0.9  |\n|  916 |   0 |    0.93 |\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ny\nproba\n\n\n\n\n460\n1\n0.83\n\n\n1287\n1\n0.84\n\n\n674\n1\n0.86\n\n\n1468\n0\n0.90\n\n\n916\n0\n0.93\n\n\n\n\n\n\n\n\n\n|      |   y |   proba |\n|-----:|----:|--------:|\n|  460 |   1 |    0.83 |\n| 1287 |   1 |    0.84 |\n|  674 |   1 |    0.86 |\n| 1468 |   0 |    0.9  |\n|  916 |   0 |    0.93 |"
   },
   {
-    "objectID": "hyperparameter_tuning_spark.html",
-    "href": "hyperparameter_tuning_spark.html",
-    "title": "Distributed hyperparameter tuning of machine learning models in Spark",
-    "section": "",
-    "text": "Hyperparameter tuning of machine learning models often requires significant computing time. Scikit-learn implements parallel processing to speed things up, but real speed gain can only be achieved by applying distributed computing like using Spark. In this blog post I show how to do hyperparameter tuning in Spark for any machine learning model, independent whether it’s scikit-learn, Tensorflow or Keras, XGBoost, LightGBM etc."
-  },
-  {
     "objectID": "hyperparameter_tuning_spark.html#introduction",
     "href": "hyperparameter_tuning_spark.html#introduction",
     "title": "Distributed hyperparameter tuning of machine learning models in Spark",
-    "section": "",
-    "text": "Hyperparameter tuning of machine learning models often requires significant computing time. Scikit-learn implements parallel processing to speed things up, but real speed gain can only be achieved by applying distributed computing like using Spark. In this blog post I show how to do hyperparameter tuning in Spark for any machine learning model, independent whether it’s scikit-learn, Tensorflow or Keras, XGBoost, LightGBM etc."
+    "section": "Introduction",
+    "text": "Introduction\nHyperparameter tuning of machine learning models often requires significant computing time. Scikit-learn implements parallel processing to speed things up, but real speed gain can only be achieved by applying distributed computing like using Spark. In this blog post I show how to do hyperparameter tuning in Spark for any machine learning model, independent whether it’s scikit-learn, Tensorflow or Keras, XGBoost, LightGBM etc."
   },
   {
     "objectID": "hyperparameter_tuning_spark.html#create-combinations-of-hyperparameter-values",
