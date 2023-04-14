@@ -53,6 +53,27 @@
     "href": "about.html",
     "title": "About",
     "section": "",
-    "text": "I work as a data scientist for a financial institution. My main topics of interest are entity resolution, fuzzy matching, classification for imbalanced data problems and aggregation learning. Some of the libraries I created or co-created:\n\nDeduplipy - Entity resolution package (deduplipy.com, repo)\n\nSpark-Matcher - Entity resolution and fuzzy matching at scale in Spark (repo)\nPyMinHash - Minhashing in Python (repo)"
+    "text": "I work as a data scientist for a financial institution. My main topics of interest are entity resolution, fuzzy matching, classification for imbalanced data problems and aggregation learning.\nSome of the libraries I created or co-created:\nDeduplipy - Entity resolution package (deduplipy.com, repo)\nSpark-Matcher - Entity resolution and fuzzy matching at scale in Spark (repo) PyMinHash - Minhashing in Python (repo)"
+  },
+  {
+    "objectID": "about.html#education",
+    "href": "about.html#education",
+    "title": "Frits Hermans",
+    "section": "Education",
+    "text": "Education\nUniversity of California, San Diego | San Diego, CA PhD in Mathematics | Sept 2011 - June 2015\nMacalester College | St. Paul MA B.A in Economics | Sept 2007 - June 2011"
+  },
+  {
+    "objectID": "about.html#experience",
+    "href": "about.html#experience",
+    "title": "About",
+    "section": "Experience",
+    "text": "Experience\nSome of the libraries I created or co-created:\nDeduplipy - Entity resolution package (deduplipy.com, repo)\nSpark-Matcher - Entity resolution and fuzzy matching at scale in Spark (repo) PyMinHash - Minhashing in Python (repo)"
+  },
+  {
+    "objectID": "about.html#frits-hermans",
+    "href": "about.html#frits-hermans",
+    "title": "About",
+    "section": "",
+    "text": "I work as a data scientist for a financial institution. My main topics of interest are entity resolution, fuzzy matching, classification for imbalanced data problems and aggregation learning.\nSome of the libraries I created or co-created:\nDeduplipy - Entity resolution package (deduplipy.com, repo)\nSpark-Matcher - Entity resolution and fuzzy matching at scale in Spark (repo) PyMinHash - Minhashing in Python (repo)"
   }
 ]
