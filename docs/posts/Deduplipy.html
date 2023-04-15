@@ -169,7 +169,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<p><img src="Deduplipy_files/figure-html/c2eb8b33-1-56aaf717-0970-440c-b3f9-0aec94500f2d.png" class="img-fluid"></p>
+<p><img src="Deduplipy_files/figure-html/1945e745-1-56aaf717-0970-440c-b3f9-0aec94500f2d.png" class="img-fluid"></p>
 <p>Deduplication or entity resolution is the task to combine different representations of the same real world entity. The Python package DedupliPy implements deduplication using active learning. Active learning allows for rapid training without having to provide a large, manually labelled dataset. In this post I demonstrate how the package works and show more advanced settings.</p>
 <section id="installation" class="level2">
 <h2 class="anchored" data-anchor-id="installation">Installation</h2>
@@ -437,6 +437,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="advanced-deduplication" class="level2">
 <h2 class="anchored" data-anchor-id="advanced-deduplication">Advanced deduplication</h2>
+<p>I you’re intested in the inner workings of DedupliPy, please watch my presentation at PyData Global 2021:</p>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/SB1piCt6Vs0" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
 <p>Let’s explore some advanced settings to tailor the deduplicator to our needs. We are going to select the similarity metrics per field, define our own blocking rules and include interaction between the fields.</p>
 <p>The similarity metrics per field are entered in a dict. Similarity metric can be any function that takes two strings and output a number. We use some string similarity functions that are implemented in the Python package called ‘thefuzz’ (<code>pip install thefuzz</code>):</p>
 <div class="cell" data-execution_count="21">
