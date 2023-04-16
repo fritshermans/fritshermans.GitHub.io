@@ -178,7 +178,7 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 
 </header>
 
-<p><img src="Deduplipy_files/figure-html/1f9bf5ae-1-56aaf717-0970-440c-b3f9-0aec94500f2d.png" class="img-fluid"></p>
+<p><img src="Deduplipy_files/figure-html/46db1257-1-56aaf717-0970-440c-b3f9-0aec94500f2d.png" class="img-fluid"></p>
 <p>Deduplication or entity resolution is the task to combine different representations of the same real world entity. The Python package DedupliPy implements deduplication using active learning. Active learning allows for rapid training without having to provide a large, manually labelled dataset. In this post I demonstrate how the package works and show more advanced settings.</p>
 <section id="installation" class="level2">
 <h2 class="anchored" data-anchor-id="installation">Installation</h2>
@@ -188,7 +188,7 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 <section id="simple-deduplication" class="level2">
 <h2 class="anchored" data-anchor-id="simple-deduplication">Simple deduplication</h2>
 <p>DedupliPy comes with example data. We first load the ‘voters’ data that contains duplicate records:</p>
-<div class="cell" data-execution_count="9">
+<div class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> deduplipy.datasets <span class="im">import</span> load_data</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> load_data(kind<span class="op">=</span><span class="st">'voters'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -197,16 +197,11 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 </div>
 </div>
 <p>This dataset contains names, suburbs and postcodes.</p>
-<div class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df.head(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="10">
-<div>
-
-
+<div class="cell" data-execution_count="3">
+<div class="cell-output cell-output-display" data-execution_count="3">
 <table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">name</th>
 <th data-quarto-table-cell-role="th">suburb</th>
 <th data-quarto-table-cell-role="th">postcode</th>
@@ -214,46 +209,44 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
 <td>khimerc thomas</td>
 <td>charlotte</td>
 <td>2826g</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
 <td>lucille richardst</td>
 <td>kannapolis</td>
 <td>28o81</td>
 </tr>
+<tr class="odd">
+<td>reb3cca bauerboand</td>
+<td>raleigh</td>
+<td>27615</td>
+</tr>
 </tbody>
 </table>
-
-</div>
 </div>
 </div>
 <p>Create a <code>Deduplicator</code> instance and provide the column names to be used for deduplication:</p>
-<div class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> deduplipy.deduplicator <span class="im">import</span> Deduplicator</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> deduplipy.deduplicator <span class="im">import</span> Deduplicator</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>myDedupliPy <span class="op">=</span> Deduplicator([<span class="st">'name'</span>, <span class="st">'suburb'</span>, <span class="st">'postcode'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>myDedupliPy <span class="op">=</span> Deduplicator([<span class="st">'name'</span>, <span class="st">'suburb'</span>, <span class="st">'postcode'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Fit the <code>Deduplicator</code> by active learning; enter whether a pair is a match (y) or not (n). When the training is converged, you will be notified and you can finish training by entering ‘f’.</p>
 <div class="cell" data-scrolled="true" data-tags="[]">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>myDedupliPy.fit(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>myDedupliPy.fit(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Apply the trained <code>Deduplicator</code> on (new) data. The column <code>deduplication_id</code> is the identifier for a cluster. Rows with the same <code>deduplication_id</code> are found to be the same real world entity.</p>
-<div class="cell" data-execution_count="16">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> myDedupliPy.predict(df)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>res.sort_values(<span class="st">'deduplication_id'</span>).head(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="16">
-<div>
-
-
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> myDedupliPy.predict(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="10">
+<div class="cell-output cell-output-display" data-execution_count="10">
 <table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">name</th>
 <th data-quarto-table-cell-role="th">suburb</th>
 <th data-quarto-table-cell-role="th">postcode</th>
@@ -262,70 +255,60 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">1048</td>
-<td>priscilla amrtin</td>
-<td>charlotte</td>
-<td>28212</td>
-<td>1</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">381</td>
-<td>priscilla martin</td>
-<td>charlotte</td>
-<td>28210</td>
-<td>1</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">1305</td>
-<td>charlotte mccraney</td>
-<td>charl0tte</td>
-<td>28276</td>
-<td>2</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">328</td>
-<td>charlotte mccraney</td>
-<td>charlotte</td>
-<td>28216</td>
-<td>2</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">123</td>
 <td>caria macartney</td>
 <td>charlotte</td>
 <td>28220</td>
-<td>3</td>
+<td>1</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1447</td>
 <td>carla macartney</td>
 <td>charlotte</td>
 <td>28227</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>martha safrit</td>
+<td>cha4lotte</td>
+<td>282l5</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>martha safrit</td>
+<td>charlotte</td>
+<td>28215</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>jeanronel corbier</td>
+<td>charlotte</td>
+<td>28213</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>jeanronel corpier</td>
+<td>charrlotte</td>
+<td>28213</td>
 <td>3</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">1740</td>
-<td>walter monaan</td>
+<td>melissa kaltenbach</td>
 <td>charlotte</td>
-<td>28202</td>
+<td>28211</td>
 <td>4</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">268</td>
-<td>walter monahan</td>
+<td>melissa kalteribach</td>
 <td>charlotte</td>
-<td>28205</td>
+<td>28251</td>
 <td>4</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">1380</td>
 <td>kiea matthews</td>
 <td>charlotte</td>
 <td>28218</td>
 <td>5</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">252</td>
 <td>kiera matthews</td>
 <td>charlotte</td>
 <td>28216</td>
@@ -333,33 +316,28 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 </tr>
 </tbody>
 </table>
-
-</div>
 </div>
 </div>
 <p>The <code>Deduplicator</code> instance can be saved as a pickle file and be applied on new data after training:</p>
-<div class="cell" data-execution_count="17">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pickle</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pickle</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="18">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">'mypickle.pkl'</span>, <span class="st">'wb'</span>) <span class="im">as</span> f:</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    pickle.dump(myDedupliPy, f)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">'mypickle.pkl'</span>, <span class="st">'wb'</span>) <span class="im">as</span> f:</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    pickle.dump(myDedupliPy, f)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="19">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">'mypickle.pkl'</span>, <span class="st">'rb'</span>) <span class="im">as</span> f:</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    loaded_obj <span class="op">=</span> pickle.load(f)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">'mypickle.pkl'</span>, <span class="st">'rb'</span>) <span class="im">as</span> f:</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    loaded_obj <span class="op">=</span> pickle.load(f)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="20">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> loaded_obj.predict(df)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>res.sort_values(<span class="st">'deduplication_id'</span>).head(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="20">
-<div>
-
-
+<div class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> loaded_obj.predict(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="15">
+<div class="cell-output cell-output-display" data-execution_count="15">
 <table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">name</th>
 <th data-quarto-table-cell-role="th">suburb</th>
 <th data-quarto-table-cell-role="th">postcode</th>
@@ -368,70 +346,60 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">1048</td>
-<td>priscilla amrtin</td>
-<td>charlotte</td>
-<td>28212</td>
-<td>1</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">381</td>
-<td>priscilla martin</td>
-<td>charlotte</td>
-<td>28210</td>
-<td>1</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">1305</td>
-<td>charlotte mccraney</td>
-<td>charl0tte</td>
-<td>28276</td>
-<td>2</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">328</td>
-<td>charlotte mccraney</td>
-<td>charlotte</td>
-<td>28216</td>
-<td>2</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">123</td>
 <td>caria macartney</td>
 <td>charlotte</td>
 <td>28220</td>
-<td>3</td>
+<td>1</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1447</td>
 <td>carla macartney</td>
 <td>charlotte</td>
 <td>28227</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>martha safrit</td>
+<td>cha4lotte</td>
+<td>282l5</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>martha safrit</td>
+<td>charlotte</td>
+<td>28215</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>jeanronel corbier</td>
+<td>charlotte</td>
+<td>28213</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>jeanronel corpier</td>
+<td>charrlotte</td>
+<td>28213</td>
 <td>3</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">1740</td>
-<td>walter monaan</td>
+<td>melissa kaltenbach</td>
 <td>charlotte</td>
-<td>28202</td>
+<td>28211</td>
 <td>4</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">268</td>
-<td>walter monahan</td>
+<td>melissa kalteribach</td>
 <td>charlotte</td>
-<td>28205</td>
+<td>28251</td>
 <td>4</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">1380</td>
 <td>kiea matthews</td>
 <td>charlotte</td>
 <td>28218</td>
 <td>5</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">252</td>
 <td>kiera matthews</td>
 <td>charlotte</td>
 <td>28216</td>
@@ -439,8 +407,6 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 </tr>
 </tbody>
 </table>
-
-</div>
 </div>
 </div>
 </section>
@@ -450,51 +416,38 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 <div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/SB1piCt6Vs0" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
 <p>Let’s explore some advanced settings to tailor the deduplicator to our needs. We are going to select the similarity metrics per field, define our own blocking rules and include interaction between the fields.</p>
 <p>The similarity metrics per field are entered in a dict. Similarity metric can be any function that takes two strings and output a number. We use some string similarity functions that are implemented in the Python package called ‘thefuzz’ (<code>pip install thefuzz</code>):</p>
-<div class="cell" data-execution_count="21">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> thefuzz.fuzz <span class="im">import</span> ratio, partial_ratio, token_set_ratio, token_sort_ratio</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> thefuzz.fuzz <span class="im">import</span> ratio, partial_ratio, token_set_ratio, token_sort_ratio</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="23">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>field_info <span class="op">=</span> {<span class="st">'name'</span>:[ratio, partial_ratio], </span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>              <span class="st">'suburb'</span>:[token_set_ratio, token_sort_ratio], </span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>              <span class="st">'postcode'</span>:[ratio]}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>field_info <span class="op">=</span> {<span class="st">'name'</span>:[ratio, partial_ratio], </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>              <span class="st">'suburb'</span>:[token_set_ratio, token_sort_ratio], </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>              <span class="st">'postcode'</span>:[ratio]}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We choose a set of rules for blocking which we define ourselves. We only apply this rule to the ‘name’ column.</p>
-<div class="cell" data-execution_count="25">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> first_two_characters(x):</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> x[:<span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> first_two_characters(x):</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> x[:<span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>When we set<code>interaction=True</code>, the classifier includes interaction features, e.g.&nbsp;<code>ratio('name') * token_set_ratio('suburb')</code>. When interaction features are included, the logistic regression classifier applies a L1 regularisation to prevent overfitting. We also set <code>verbose=1</code> to get information on the progress and a distribution of scores</p>
-<div class="cell" data-execution_count="27">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>myDedupliPy <span class="op">=</span> Deduplicator(field_info<span class="op">=</span>field_info, interaction<span class="op">=</span><span class="va">True</span>, </span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>                           rules<span class="op">=</span>{<span class="st">'name'</span>: [first_two_characters]}, verbose<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>myDedupliPy <span class="op">=</span> Deduplicator(field_info<span class="op">=</span>field_info, interaction<span class="op">=</span><span class="va">True</span>, </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>                           rules<span class="op">=</span>{<span class="st">'name'</span>: [first_two_characters]}, verbose<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Fit the <code>Deduplicator</code> by active learning; enter whether a pair is a match (y) or not (n). When the training is converged, you will be notified and you can finish training by entering ‘f’.</p>
 <div class="cell" data-scrolled="true" data-tags="[]">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>myDedupliPy.fit(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>myDedupliPy.fit(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>After fitting, the histogram of scores is shown. Based on this histogram, we decide to ignore all pairs with a similarity probability lower than 0.1 when predicting:</p>
 <p>Apply the trained <code>Deduplicator</code> on (new) data. The column <code>deduplication_id</code> is the identifier for a cluster. Rows with the same <code>deduplication_id</code> are found to be the same real world entity.</p>
-<div class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> myDedupliPy.predict(df, score_threshold<span class="op">=</span><span class="fl">0.1</span>)</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>res.sort_values(<span class="st">'deduplication_id'</span>).head(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>blocking started
-blocking finished
-Nr of pairs: 27350
-scoring started
-scoring finished
-Nr of filtered pairs: 892
-Clustering started
-Clustering finished</code></pre>
+<div class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> myDedupliPy.predict(df, score_threshold<span class="op">=</span><span class="fl">0.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="9">
-<div>
-
-
+<div class="cell" data-execution_count="22">
+<div class="cell-output cell-output-display" data-execution_count="22">
 <table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">name</th>
 <th data-quarto-table-cell-role="th">suburb</th>
 <th data-quarto-table-cell-role="th">postcode</th>
@@ -503,79 +456,67 @@ Clustering finished</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">1</td>
 <td>lucille richardst</td>
 <td>kannapolis</td>
 <td>28o81</td>
 <td>1</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1194</td>
 <td>lucille richards</td>
 <td>kannapolis</td>
 <td>28081</td>
 <td>1</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">604</td>
 <td>lutta baldwin</td>
 <td>whiteville</td>
 <td>28472</td>
 <td>3</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">995</td>
 <td>lutta baldwin</td>
 <td>whitevill</td>
 <td>28475</td>
 <td>3</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>reb3cca bauerboand</td>
-<td>raleigh</td>
-<td>27615</td>
-<td>5</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1134</td>
-<td>rebecca bauerband</td>
-<td>raleigh</td>
-<td>27615</td>
-<td>5</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">1456</td>
-<td>rebecca harrell</td>
-<td>winton</td>
-<td>27986</td>
-<td>7</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1024</td>
-<td>rebecca harrell</td>
-<td>witnon</td>
-<td>27926</td>
-<td>7</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">92</td>
 <td>repecca harrell</td>
 <td>winton</td>
 <td>27q86</td>
-<td>7</td>
+<td>5</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">675</td>
+<td>rebecca harrell</td>
+<td>winton</td>
+<td>27986</td>
+<td>5</td>
+</tr>
+<tr class="odd">
+<td>rebecca harrell</td>
+<td>witnon</td>
+<td>27926</td>
+<td>5</td>
+</tr>
+<tr class="even">
+<td>rebecca bauerband</td>
+<td>raleigh</td>
+<td>27615</td>
+<td>6</td>
+</tr>
+<tr class="odd">
+<td>reb3cca bauerboand</td>
+<td>raleigh</td>
+<td>27615</td>
+<td>6</td>
+</tr>
+<tr class="even">
 <td>rebeccah shelton</td>
 <td>whittier</td>
 <td>28789</td>
-<td>10</td>
+<td>7</td>
 </tr>
 </tbody>
 </table>
-
-</div>
 </div>
 </div>
 

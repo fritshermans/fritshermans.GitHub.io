@@ -188,7 +188,7 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 <section id="create-combinations-of-hyperparameter-values" class="level2">
 <h2 class="anchored" data-anchor-id="create-combinations-of-hyperparameter-values">Create combinations of hyperparameter values</h2>
 <p>First, we’re going to create hyperparameter combinations that we want to test our model for. Below is a helper functions to create all combinations for a <code>param_grid</code> that contains the arguments and the values to test for.</p>
-<div class="cell" data-execution_count="1">
+<div class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> itertools <span class="im">import</span> product</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -198,13 +198,13 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [<span class="bu">dict</span>(<span class="bu">zip</span>(param_grid.keys(), x)) <span class="cf">for</span> x <span class="kw">in</span> combinations]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>So if our desired hyperparameter space is as follows…</p>
-<div class="cell" data-execution_count="2">
+<div class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>param_grid <span class="op">=</span> {<span class="st">'max_features'</span>: [<span class="st">'auto'</span>, <span class="fl">0.1</span>, <span class="fl">0.3</span>], <span class="st">'min_samples_leaf'</span>: [<span class="va">None</span>, <span class="dv">50</span>]}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>…then the combination of these two hyperparameters and their values is obtained by`:</p>
-<div class="cell" data-execution_count="3">
+<div class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>create_hyperparameter_combinations(param_grid)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
+<div class="cell-output cell-output-display" data-execution_count="11">
 <pre><code>[{'max_features': 'auto', 'min_samples_leaf': None},
  {'max_features': 'auto', 'min_samples_leaf': 50},
  {'max_features': 0.1, 'min_samples_leaf': None},
@@ -219,7 +219,7 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 <p>Now, we’re going to create a function that takes a single combination of hyperparameter values and returns performance metrics for train and test data. This function will be evaluated in distributed fashion on our Spark cluster. If you want to test 500 different hyperparameter combinations, you will see 500 jobs being executed by Spark. In this example , were going to optimise hyperparameters for a scikit-learn model. This requires scikit-learn to be installed on the worker nodes of your Spark cluster.</p>
 <p>The hyperparameter values for a particular combination are provided to the function as a json, so a string type. The advantage of this is that we don’t need to change the function definition if we want to add hyperparameters. Moreover, we are independent of the type of hyperparameter values. Many hyperparameters in scikit-learn take different types like integers, floats and strings like for example <code>max_features</code> in the RandomForestClassifier. When we provide them as a string containing a json, Spark never complains.</p>
 <p>The function definition is as follows, explanation continues below.</p>
-<div class="cell" data-execution_count="7">
+<div class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> cross_validate</span>
@@ -237,7 +237,7 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 <section id="distribute-the-evaluation-function-in-spark" class="level2">
 <h2 class="anchored" data-anchor-id="distribute-the-evaluation-function-in-spark">Distribute the evaluation function in Spark</h2>
 <p>The next step is to distribute the hyperparameter combinations and use our evaluation function to calculate model performance metrics for these hyperparameter values. This is done in the function below.</p>
-<div class="cell" data-execution_count="17">
+<div class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pyspark.sql <span class="im">import</span> types <span class="im">as</span> T</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_hyperparameter_results(spark_session, base_clf, X, y, </span>
@@ -266,7 +266,7 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 <section id="full-working-example" class="level2">
 <h2 class="anchored" data-anchor-id="full-working-example">Full working example</h2>
 <p>In the example below we do hyperparameter tuning of a DecisionTreeClassifier to predict classes for the famous iris dataset.</p>
-<div class="cell" data-execution_count="18">
+<div class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pyspark.sql <span class="im">import</span> SparkSession</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>spark <span class="op">=</span> SparkSession.builder.getOrCreate()</span>
@@ -281,16 +281,13 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>hyperpar_combinations <span class="op">=</span> create_hyperparameter_combinations(param_grid)</span>
 <span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> get_hyperparameter_results(spark, DecisionTreeClassifier(), X, y, </span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>                                     hyperpar_combinations, cv<span class="op">=</span><span class="dv">5</span>)</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>results</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="18">
-<div>
-
-
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>                                     hyperpar_combinations, cv<span class="op">=</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="16">
+<div class="cell-output cell-output-display" data-execution_count="16">
 <table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">hyperpars</th>
 <th data-quarto-table-cell-role="th">mean_train_score</th>
 <th data-quarto-table-cell-role="th">mean_test_score</th>
@@ -298,81 +295,67 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
 <td>{'max_depth': 3, 'min_samples_leaf': 5}</td>
 <td>0.968333</td>
 <td>0.940000</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
 <td>{'max_depth': 4, 'min_samples_leaf': 5}</td>
 <td>0.968333</td>
 <td>0.940000</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
 <td>{'max_depth': 5, 'min_samples_leaf': 5}</td>
 <td>0.968333</td>
 <td>0.940000</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
 <td>{'max_depth': 10, 'min_samples_leaf': 5}</td>
 <td>0.968333</td>
 <td>0.940000</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
 <td>{'max_depth': 3, 'min_samples_leaf': 0.1}</td>
 <td>0.961667</td>
 <td>0.933333</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">5</td>
 <td>{'max_depth': 3, 'min_samples_leaf': 10}</td>
 <td>0.961667</td>
 <td>0.933333</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">6</td>
 <td>{'max_depth': 4, 'min_samples_leaf': 0.1}</td>
 <td>0.961667</td>
 <td>0.933333</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">7</td>
 <td>{'max_depth': 4, 'min_samples_leaf': 10}</td>
 <td>0.961667</td>
 <td>0.933333</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">8</td>
 <td>{'max_depth': 5, 'min_samples_leaf': 0.1}</td>
 <td>0.961667</td>
 <td>0.933333</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">9</td>
 <td>{'max_depth': 5, 'min_samples_leaf': 10}</td>
 <td>0.961667</td>
 <td>0.933333</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">10</td>
 <td>{'max_depth': 10, 'min_samples_leaf': 0.1}</td>
 <td>0.961667</td>
 <td>0.933333</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">11</td>
 <td>{'max_depth': 10, 'min_samples_leaf': 10}</td>
 <td>0.961667</td>
 <td>0.933333</td>
 </tr>
 </tbody>
 </table>
-
-</div>
 </div>
 </div>
 

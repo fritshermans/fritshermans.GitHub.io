@@ -186,65 +186,52 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 <section id="apply-on-pandas-dataframe" class="level2">
 <h2 class="anchored" data-anchor-id="apply-on-pandas-dataframe">Apply on Pandas dataframe</h2>
 <p>PyMinHash comes with a toy dataset containing various name and address combinations of Stoxx50 companies. Let’s load the data and see what it contains.</p>
-<div class="cell" data-execution_count="2">
+<div class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pyminhash.datasets <span class="im">import</span> load_data</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> load_data()</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="2">
-<div>
-
-
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> load_data()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="8">
+<div class="cell-output cell-output-display" data-execution_count="8">
 <table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">name</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
 <td>adidas ag adi dassler strasse 1 91074 germany</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
 <td>adidas ag adi dassler strasse 1 91074 herzogenaurach</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
 <td>adidas ag adi dassler strasse 1 91074 herzogenaurach germany</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
 <td>airbus se 2333 cs leiden netherlands</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
 <td>airbus se 2333 cs netherlands</td>
 </tr>
 </tbody>
 </table>
-
-</div>
 </div>
 </div>
 <p>We’re going to match various representations that belong to the same company. For this, we import create a <code>MinHash</code> object and tell it to use 10 hash tables. More hash tables means more accurate Jaccard similarity calculation but also requires more time and memory.</p>
-<div class="cell" data-execution_count="3">
+<div class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pyminhash.pyminhash <span class="im">import</span> MinHash</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>myHasher <span class="op">=</span> MinHash(n_hash_tables<span class="op">=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The <code>fit_predict</code> method needs the dataframe and the name of the column to which minhashing should be applied. The result is a dataframe containing all pairs that have a non-zero Jaccard similarity:</p>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> myHasher.fit_predict(df, <span class="st">'name'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <div class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> myHasher.fit_predict(df, <span class="st">'name'</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>result[[<span class="st">'name_1'</span>, <span class="st">'name_2'</span>, <span class="st">'jaccard_sim'</span>]].head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="7">
-<div>
-
-
 <table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">name_1</th>
 <th data-quarto-table-cell-role="th">name_2</th>
 <th data-quarto-table-cell-role="th">jaccard_sim</th>
@@ -252,52 +239,40 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>adidas ag adi dassler strasse 1 91074 herzogenaurach</td>
-<td>adidas ag adi dassler strasse 1 91074 herzogenaurach germany</td>
+<td>engie sa 1 place samuel de champlain 92400 courbevoie</td>
+<td>engie sa 1 place samuel de champlain 92400 france</td>
 <td>1.0</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">69</td>
+<td>koninklijke philips n v amstelplein 2 1096 bc</td>
+<td>koninklijke philips n v amstelplein 2 1096 bc amsterdam</td>
+<td>1.0</td>
+</tr>
+<tr class="odd">
+<td>asml holding n v de run 6501 5504 dr veldhoven netherlands</td>
+<td>asml holding n v de run 6501 veldhoven netherlands</td>
+<td>1.0</td>
+</tr>
+<tr class="even">
+<td>amadeus it group s a salvador de madariaga 1 28027 madrid</td>
+<td>amadeus it group s a salvador de madariaga 1 28027 madrid spain</td>
+<td>1.0</td>
+</tr>
+<tr class="odd">
 <td>deutsche telekom ag 53113 bonn germany</td>
 <td>deutsche telekom ag 53113 germany</td>
 <td>1.0</td>
 </tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">138</td>
-<td>allianz se 80802 munich germany</td>
-<td>allianz se munich germany</td>
-<td>1.0</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">884</td>
-<td>linde plc 10 priestley road surrey research park gu2 7xy guildford</td>
-<td>linde plc 10 priestley road surrey research park gu2 7xy united kingdom</td>
-<td>1.0</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">273</td>
-<td>munchener ruckversicherungs gesellschaft aktiengesellschaft koniginstrasse 107 80802 munich</td>
-<td>munchener ruckversicherungs gesellschaft aktiengesellschaft koniginstrasse 107 munich germany</td>
-<td>1.0</td>
-</tr>
 </tbody>
 </table>
-
-</div>
 </div>
 </div>
 <p>As one can see below, for a Jaccard similarity of 1.0, all words in the shortest string appear in the longest string. For lower Jaccard similarity values, the match is less than perfect. Note that Jaccard similarity has granularity of 1/n_hash_tables, in this example 0.1.</p>
-<div class="cell" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>result[[<span class="st">'name_1'</span>, <span class="st">'name_2'</span>, <span class="st">'jaccard_sim'</span>]].groupby(<span class="st">'jaccard_sim'</span>).head(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="12">
-<div>
-
-
+<div class="cell" data-execution_count="10">
+<div class="cell-output cell-output-display" data-execution_count="10">
 <table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">name_1</th>
 <th data-quarto-table-cell-role="th">name_2</th>
 <th data-quarto-table-cell-role="th">jaccard_sim</th>
@@ -305,129 +280,107 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>adidas ag adi dassler strasse 1 91074 herzogenaurach</td>
-<td>adidas ag adi dassler strasse 1 91074 herzogenaurach germany</td>
+<td>engie sa 1 place samuel de champlain 92400 courbevoie</td>
+<td>engie sa 1 place samuel de champlain 92400 france</td>
 <td>1.0</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">69</td>
-<td>deutsche telekom ag 53113 bonn germany</td>
-<td>deutsche telekom ag 53113 germany</td>
+<td>koninklijke philips n v amstelplein 2 1096 bc</td>
+<td>koninklijke philips n v amstelplein 2 1096 bc amsterdam</td>
 <td>1.0</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>adidas ag adi dassler strasse 1 91074 germany</td>
-<td>adidas ag adi dassler strasse 1 91074 herzogenaurach</td>
+<td>vinci sa 1 cours ferdinand de lesseps 92851 france</td>
+<td>vinci sa 1 cours ferdinand de lesseps rueil malmaison france</td>
 <td>0.9</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">299</td>
-<td>amadeus it group s a salvador de madariaga 1 28027 madrid</td>
-<td>amadeus it group s a salvador de madariaga 1 28027 madrid spain</td>
+<td>sanofi 54 rue la boetie 75008 france</td>
+<td>sanofi 54 rue la boetie 75008 paris france</td>
 <td>0.9</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">124</td>
-<td>volkswagen ag berliner ring 2 38440</td>
-<td>volkswagen ag berliner ring 2 38440 wolfsburg</td>
+<td>airbus se 2333 cs leiden netherlands</td>
+<td>airbus se 2333 cs netherlands</td>
 <td>0.8</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">77</td>
 <td>fresenius se co kgaa else kroner strasse 1 61352 bad homburg vor der hohe germany</td>
-<td>fresenius se co kgaa else kroner strasse 1 bad homburg vor der hohe germany</td>
+<td>fresenius se co kgaa else kroner strasse 1 61352 germany</td>
 <td>0.8</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">863</td>
-<td>crh plc stonemason s way 16 dublin ireland</td>
-<td>crh plc stonemason s way 16 ireland</td>
+<td>bayerische motoren werke aktiengesellschaft munich germany</td>
+<td>bayerische motoren werke aktiengesellschaft petuelring 130 80788 munich</td>
 <td>0.7</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">910</td>
-<td>nokia corporation 2610 espoo finland</td>
-<td>nokia corporation finland</td>
+<td>bayerische motoren werke aktiengesellschaft munich germany</td>
+<td>bayerische motoren werke aktiengesellschaft petuelring 130 munich germany</td>
 <td>0.7</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">78</td>
-<td>fresenius se co kgaa else kroner strasse 1 61352 germany</td>
-<td>fresenius se co kgaa else kroner strasse 1 bad homburg vor der hohe germany</td>
+<td>axa sa 75008 paris france</td>
+<td>sanofi 54 rue la boetie 75008 paris france</td>
 <td>0.6</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">410</td>
-<td>bnp paribas sa 16 boulevard des italiens 75009 france</td>
-<td>bnp paribas sa 16 boulevard des italiens paris france</td>
+<td>banco bilbao vizcaya argentaria s a 48005 bilbao spain</td>
+<td>banco bilbao vizcaya argentaria s a bilbao</td>
 <td>0.6</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">264</td>
+<td>lvmh moet hennessy louis vuitton societe europeenne 75008 france</td>
+<td>sanofi 54 rue la boetie 75008 paris france</td>
+<td>0.5</td>
+</tr>
+<tr class="even">
+<td>safran sa 2 boulevard du general martial valin paris france</td>
+<td>safran sa 75724 france</td>
+<td>0.5</td>
+</tr>
+<tr class="odd">
+<td>munchener ruckversicherungs gesellschaft aktiengesellschaft koniginstrasse 107 munich germany</td>
+<td>siemens aktiengesellschaft munich germany</td>
+<td>0.4</td>
+</tr>
+<tr class="even">
 <td>allianz se koniginstrasse 28 munich germany</td>
 <td>munchener ruckversicherungs gesellschaft aktiengesellschaft koniginstrasse 107 munich germany</td>
-<td>0.5</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">393</td>
-<td>banco bilbao vizcaya argentaria s a plaza san nicolas 4 48005 spain</td>
-<td>iberdrola s a plaza euskadi 5 48009 bilbao spain</td>
-<td>0.5</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">16</td>
-<td>adidas ag adi dassler strasse 1 91074 herzogenaurach</td>
-<td>deutsche post ag platz der deutschen post</td>
-<td>0.4</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">10</td>
-<td>adidas ag adi dassler strasse 1 91074 germany</td>
-<td>daimler ag mercedesstrasse 120 70372 stuttgart germany</td>
 <td>0.4</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">240</td>
-<td>allianz se munich germany</td>
-<td>bayerische motoren werke aktiengesellschaft petuelring 130 80788 munich</td>
+<td>bnp paribas sa 16 boulevard des italiens 75009 france</td>
+<td>societe generale societe 75009 paris france</td>
 <td>0.3</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">239</td>
-<td>allianz se koniginstrasse 28 munich germany</td>
-<td>bayerische motoren werke aktiengesellschaft petuelring 130 80788 munich</td>
+<td>essilorluxottica 1 6 rue paul cezanne paris france</td>
+<td>l oreal s a 92117 france</td>
 <td>0.3</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">376</td>
-<td>schneider electric s e 35 rue joseph monier 92500 rueil malmaison</td>
-<td>vinci sa 1 cours ferdinand de lesseps rueil malmaison france</td>
+<td>bnp paribas sa paris</td>
+<td>engie sa 92400 courbevoie france</td>
 <td>0.2</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">757</td>
-<td>kering sa 40 rue de sevres 75007 paris france</td>
-<td>total s a paris</td>
+<td>essilorluxottica 1 6 rue paul cezanne paris france</td>
+<td>schneider electric s e 92500 france</td>
 <td>0.2</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">675</td>
-<td>danone s a 75439 paris</td>
-<td>societe generale societe 29 boulevard haussmann 75009 paris france</td>
+<td>societe generale societe 75009 paris france</td>
+<td>total s a 2 place jean millier paris france</td>
 <td>0.1</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">698</td>
-<td>bnp paribas sa paris</td>
-<td>societe generale societe 75009 paris france</td>
+<td>vinci sa 1 cours ferdinand de lesseps rueil malmaison france</td>
+<td>vivendi sa 75380 paris</td>
 <td>0.1</td>
 </tr>
 </tbody>
 </table>
-
-</div>
 </div>
 </div>
 <p>If you increase the number of hash tables, the accuracy of the Jaccard similarity increases but it comes at the cost of speed and memory usage.</p>
