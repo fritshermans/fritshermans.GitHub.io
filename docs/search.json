@@ -67,7 +67,7 @@
     "href": "posts/Deduplipy.html",
     "title": "Deduplication of records using DedupliPy",
     "section": "",
-    "text": "Deduplication or entity resolution is the task to combine different representations of the same real world entity. The Python package DedupliPy implements deduplication using active learning. Active learning allows for rapid training without having to provide a large, manually labelled dataset. In this post I demonstrate how the package works and show more advanced settings."
+    "text": "Deduplication or entity resolution is the task to combine different representations of the same real world entity. The Python package DedupliPy implements deduplication using active learning. Active learning allows for rapid training without having to provide a large, manually labelled dataset. In this post I demonstrate how the package works and show more advanced settings. In case you want to apply entity resolution on large data in Spark, please have a look at Spark-Matcher, a package I developed together with two colleagues."
   },
   {
     "objectID": "posts/Deduplipy.html#installation",
