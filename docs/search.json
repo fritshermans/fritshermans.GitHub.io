@@ -56,6 +56,13 @@
     "text": "Full working example\nIn the example below we do hyperparameter tuning of a DecisionTreeClassifier to predict classes for the famous iris dataset.\n\nfrom pyspark.sql import SparkSession\n\nspark = SparkSession.builder.getOrCreate()\n\nfrom sklearn.datasets import load_iris\nfrom sklearn.tree import DecisionTreeClassifier\n\nX, y = load_iris(return_X_y=True)\n\nparam_grid = {'max_depth':[3,4,5,10], 'min_samples_leaf':[0.1, 5, 10]}\n\nhyperpar_combinations = create_hyperparameter_combinations(param_grid)\n\nresults = get_hyperparameter_results(spark, DecisionTreeClassifier(), X, y, \n                                     hyperpar_combinations, cv=5)\n\n\n\n\n\n\nhyperpars\nmean_train_score\nmean_test_score\n\n\n\n\n{'max_depth': 3, 'min_samples_leaf': 5}\n0.968333\n0.940000\n\n\n{'max_depth': 4, 'min_samples_leaf': 5}\n0.968333\n0.940000\n\n\n{'max_depth': 5, 'min_samples_leaf': 5}\n0.968333\n0.940000\n\n\n{'max_depth': 10, 'min_samples_leaf': 5}\n0.968333\n0.940000\n\n\n{'max_depth': 3, 'min_samples_leaf': 0.1}\n0.961667\n0.933333\n\n\n{'max_depth': 3, 'min_samples_leaf': 10}\n0.961667\n0.933333\n\n\n{'max_depth': 4, 'min_samples_leaf': 0.1}\n0.961667\n0.933333\n\n\n{'max_depth': 4, 'min_samples_leaf': 10}\n0.961667\n0.933333\n\n\n{'max_depth': 5, 'min_samples_leaf': 0.1}\n0.961667\n0.933333\n\n\n{'max_depth': 5, 'min_samples_leaf': 10}\n0.961667\n0.933333\n\n\n{'max_depth': 10, 'min_samples_leaf': 0.1}\n0.961667\n0.933333\n\n\n{'max_depth': 10, 'min_samples_leaf': 10}\n0.961667\n0.933333"
   },
   {
+    "objectID": "posts/aggregation_learning.html",
+    "href": "posts/aggregation_learning.html",
+    "title": "Aggregation learning",
+    "section": "",
+    "text": "For some modelling exercises, input data is at a different granularity level than the target.\nOne example is assigning a single risk score to a bank client based on many transactions. A common solution is to create features based on aggregates; calculating aggregates like min, max, sum, mean and count of the input level features and use these to predict the target. By using these aggregates, feature interaction on input level is lost which might result in suboptimal model performance. Moreover, model explainability is on aggregated feature level and does not reveal the importance at input level.\nTo overcome these issues, we need so called ‘aggregation learning’ models. During the Data Science for Finance Conference 2023, I presented how to implement a simple but powerful aggregation learning neural network for classification in Tensorflow. Please watch my presentation below."
+  },
+  {
     "objectID": "posts/Deduplipy.html",
     "href": "posts/Deduplipy.html",
     "title": "Deduplication of records using DedupliPy",
@@ -88,20 +95,20 @@
     "href": "index.html",
     "title": "Data science blog",
     "section": "",
-    "text": "Welcome to my data science blog.\n\n\n\n\n\n\n\n\n  \n\n\n\n\nDeduplication of records using DedupliPy\n\n\n\n\n\n\n\n\n\n\n \n\n\n\n\n  \n\n\n\n\nDistributed hyperparameter tuning of Scikit-learn models in Spark\n\n\n\n\n\n\n\n\n\n\n \n\n\n\n\n  \n\n\n\n\nFinding duplicate records using PyMinHash\n\n\n\n\n\n\n\n\n\n\n \n\n\n\n\nNo matching items"
+    "text": "Welcome to my data science blog.\n\n\n\n\n\n\n\n\n  \n\n\n\n\nAggregation learning\n\n\n\n\n\n\n\n\n\n\n \n\n\n\n\n  \n\n\n\n\nDeduplication of records using DedupliPy\n\n\n\n\n\n\n\n\n\n\n \n\n\n\n\n  \n\n\n\n\nDistributed hyperparameter tuning of Scikit-learn models in Spark\n\n\n\n\n\n\n\n\n\n\n \n\n\n\n\n  \n\n\n\n\nFinding duplicate records using PyMinHash\n\n\n\n\n\n\n\n\n\n\n \n\n\n\n\nNo matching items"
   },
   {
     "objectID": "about.html",
     "href": "about.html",
     "title": "About",
     "section": "",
-    "text": "I work as a data scientist for a financial institution. My main topics of interest are entity resolution, fuzzy matching, classification for imbalanced data problems and aggregation learning.\nSome of the libraries I created or co-created:\n\nDeduplipy - Entity resolution package (deduplipy.com, GitHub, PyData Global presentation)\n\nSpark-Matcher - Entity resolution and fuzzy matching at scale in Spark (GitHub)\nPyMinHash - Minhashing in Python (GitHub)\nOther:\nLockdownRadar.nl (newspaper article)"
+    "text": "I work as a data scientist for a financial institution. My main topics of interest are entity resolution, fuzzy matching, classification for imbalanced data problems and aggregation learning.\nSome of the libraries I created or co-created:\n\nDeduplipy - Entity resolution package (deduplipy.com, GitHub, PyData Global presentation)\n\nSpark-Matcher - Entity resolution and fuzzy matching at scale in Spark (GitHub)\nPyMinHash - Minhashing in Python (GitHub)\nOther:\n\nLockdownRadar.nl (newspaper article)"
   },
   {
     "objectID": "about.html#frits-hermans",
     "href": "about.html#frits-hermans",
     "title": "About",
     "section": "",
-    "text": "I work as a data scientist for a financial institution. My main topics of interest are entity resolution, fuzzy matching, classification for imbalanced data problems and aggregation learning.\nSome of the libraries I created or co-created:\n\nDeduplipy - Entity resolution package (deduplipy.com, GitHub, PyData Global presentation)\n\nSpark-Matcher - Entity resolution and fuzzy matching at scale in Spark (GitHub)\nPyMinHash - Minhashing in Python (GitHub)\nOther:\nLockdownRadar.nl (newspaper article)"
+    "text": "I work as a data scientist for a financial institution. My main topics of interest are entity resolution, fuzzy matching, classification for imbalanced data problems and aggregation learning.\nSome of the libraries I created or co-created:\n\nDeduplipy - Entity resolution package (deduplipy.com, GitHub, PyData Global presentation)\n\nSpark-Matcher - Entity resolution and fuzzy matching at scale in Spark (GitHub)\nPyMinHash - Minhashing in Python (GitHub)\nOther:\n\nLockdownRadar.nl (newspaper article)"
   }
 ]

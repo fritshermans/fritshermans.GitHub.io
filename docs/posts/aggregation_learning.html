@@ -8,7 +8,7 @@
 
 <meta name="keywords" content="data science, advanced analytics, machine learning, AI, artificial intelligence, Python, Spark, PySpark, modelling, scikit-learn, sklearn, tensorflow, keras, neural network, transaction monitoring, aggregation learning, deduplication, deduplipy, spark-matcher, entity resolution">
 
-<title>Frits Hermans - Data science blog</title>
+<title>Frits Hermans – aggregation_learning</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -24,24 +24,22 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -61,35 +59,6 @@ ul.task-list li input[type="checkbox"] {
     "search-submit-button-title": "Submit"
   }
 }</script>
-<script>
-
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-title','listing-author','listing-image','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-title","listing-author","listing-image","listing-description"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
 <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-DEDM5V9GGM"></script>
 
 <script type="text/javascript">
@@ -100,10 +69,8 @@ gtag('js', new Date());
 gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 </script>
 
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../styles.css">
 </head>
 
 <body class="nav-fixed">
@@ -113,7 +80,7 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
     <nav class="navbar navbar-expand-lg navbar-dark ">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">Frits Hermans</span>
     </a>
   </div>
@@ -124,11 +91,11 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" rel="" target="" aria-current="page">
+    <a class="nav-link" href="../index.html" rel="" target="">
  <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./about.html" rel="" target="">
+    <a class="nav-link" href="../about.html" rel="" target="">
  <span class="menu-text">About</span></a>
   </li>  
 </ul>
@@ -145,124 +112,43 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#aggregation-learning" id="toc-aggregation-learning" class="nav-link active" data-scroll-target="#aggregation-learning">Aggregation learning</a>
+  <ul class="collapse">
+  <li><a href="#slides" id="toc-slides" class="nav-link" data-scroll-target="#slides">Slides</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Data science blog</h1>
-</div>
 
 
+<section id="aggregation-learning" class="level1">
+<h1>Aggregation learning</h1>
+<p>For some modelling exercises, input data is at a different granularity level than the target.</p>
+<p>One example is assigning a single risk score to a bank client based on many transactions. A common solution is to create features based on aggregates; calculating aggregates like min, max, sum, mean and count of the input level features and use these to predict the target. By using these aggregates, feature interaction on input level is lost which might result in suboptimal model performance. Moreover, model explainability is on aggregated feature level and does not reveal the importance at input level.</p>
+<p>To overcome these issues, we need so called ‘aggregation learning’ models. During the Data Science for Finance Conference 2023, I presented how to implement a simple but powerful aggregation learning neural network for classification in Tensorflow. Please watch my presentation below.</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/qzbHenstOgM?si=-_r90DSjHWDjJo4Z" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="">
+</iframe>
+<section id="slides" class="level2">
+<h2 class="anchored" data-anchor-id="slides">Slides</h2>
 
-<div class="quarto-title-meta">
 
-    
-  
-    
-  </div>
-  
-
-</header>
-
-<p>Welcome to my data science blog.</p>
+<object data="aggregation_learning.pdf" type="application/pdf" width="100%" height="460px">
+</object>
 
 
 
 
-<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
-<div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-listing-file-modified-sort="1694453530743" data-listing-reading-time-sort="1">
-<div class="thumbnail">
-<p><a href="./posts/aggregation_learning.html"> <div class="listing-item-img-placeholder card-img-top" >&nbsp;</div> </a></p>
-</div>
-<div class="body">
-<a href="./posts/aggregation_learning.html">
-<h3 class="no-anchor listing-title">
-Aggregation learning
-</h3>
-<div class="listing-subtitle">
+</section>
+</section>
 
-</div>
-<div class="listing-description">
-For some modelling exercises, input data is at a different granularity level than the target.
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="./posts/aggregation_learning.html"> </a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="1" data-listing-file-modified-sort="1681729088162" data-listing-reading-time-sort="3">
-<div class="thumbnail">
-<p><a href="./posts/Deduplipy.html"> <p class="card-img-top"><img src="posts/Deduplipy_files/figure-html/79ccecb3-1-56aaf717-0970-440c-b3f9-0aec94500f2d.png"  class="thumbnail-image card-img"/></p> </a></p>
-</div>
-<div class="body">
-<a href="./posts/Deduplipy.html">
-<h3 class="no-anchor listing-title">
-Deduplication of records using DedupliPy
-</h3>
-<div class="listing-subtitle">
-
-</div>
-<div class="listing-description">
-Deduplication or entity resolution is the task to combine different representations of the same real world entity. The Python package DedupliPy implements deduplication…
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="./posts/Deduplipy.html"> </a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="2" data-listing-file-modified-sort="1682067128563" data-listing-reading-time-sort="3">
-<div class="thumbnail">
-<p><a href="./posts/hyperparameter_tuning_spark.html"> <p class="card-img-top"><img src="posts/hyperparameter_tuning_spark_files/figure-html/d3622767-1402-49ba-9513-59d9d17ce1fa-2-fdf6ff67-870d-467c-bee6-8c79951be8b0.png" alt="spark_logo.png"  class="thumbnail-image card-img"/></p> </a></p>
-</div>
-<div class="body">
-<a href="./posts/hyperparameter_tuning_spark.html">
-<h3 class="no-anchor listing-title">
-Distributed hyperparameter tuning of Scikit-learn models in Spark
-</h3>
-<div class="listing-subtitle">
-
-</div>
-<div class="listing-description">
-Hyperparameter tuning of machine learning models often requires significant computing time. Scikit-learn implements parallel processing to speed things up, but real speed…
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="./posts/hyperparameter_tuning_spark.html"> </a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="3" data-listing-file-modified-sort="1682534734094" data-listing-reading-time-sort="2">
-<div class="thumbnail">
-<p><a href="./posts/PyMinhash.html"> <div class="listing-item-img-placeholder card-img-top" >&nbsp;</div> </a></p>
-</div>
-<div class="body">
-<a href="./posts/PyMinhash.html">
-<h3 class="no-anchor listing-title">
-Finding duplicate records using PyMinHash
-</h3>
-<div class="listing-subtitle">
-
-</div>
-<div class="listing-description">
-MinHashing is a very efficient way of finding similar records in a dataset based on Jaccard similarity. My Python package…
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="./posts/PyMinhash.html"> </a>
-</div>
-</div>
-</div>
-<div class="listing-no-matching d-none">
-No matching items
-</div>
-</div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
