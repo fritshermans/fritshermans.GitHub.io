@@ -1,40 +1,5 @@
 [
   {
-    "objectID": "kaggle_cc_fraud.html",
-    "href": "kaggle_cc_fraud.html",
-    "title": "Three reasons why you should not use the Kaggle credit card fraud dataset",
-    "section": "",
-    "text": "492\n\n\n\n\n0.001727485630620034\n\n\n\n\n578.8760162601626"
-  },
-  {
-    "objectID": "kaggle_cc_fraud.html#introduction",
-    "href": "kaggle_cc_fraud.html#introduction",
-    "title": "Three reasons why you should not use the Kaggle credit card fraud dataset",
-    "section": "",
-    "text": "492\n\n\n\n\n0.001727485630620034\n\n\n\n\n578.8760162601626"
-  },
-  {
-    "objectID": "kaggle_cc_fraud.html#the-features-are-not-correlated",
-    "href": "kaggle_cc_fraud.html#the-features-are-not-correlated",
-    "title": "Three reasons why you should not use the Kaggle credit card fraud dataset",
-    "section": "The features are not correlated",
-    "text": "The features are not correlated\n\n\n\n\n\nFigure 1: Pearson correlation heatmap Kaggle credit card fraud dataset"
-  },
-  {
-    "objectID": "kaggle_cc_fraud.html#features-have-unrealistic-distributions",
-    "href": "kaggle_cc_fraud.html#features-have-unrealistic-distributions",
-    "title": "Three reasons why you should not use the Kaggle credit card fraud dataset",
-    "section": "Features have unrealistic distributions",
-    "text": "Features have unrealistic distributions\n\n\n\n\n\n\n\n(a) V1\n\n\n\n\n\n\n\n(b) V2\n\n\n\n\n\n\n\n(c) V3\n\n\n\n\n\n\n\n(d) V4\n\n\n\n\n\n\n\n\n\n(e) V5\n\n\n\n\n\n\n\n(f) V6\n\n\n\n\n\n\n\n(g) V7\n\n\n\n\n\n\n\n(h) V8\n\n\n\n\n\n\n\n\n\n(i) V9\n\n\n\n\n\n\n\n(j) V10\n\n\n\n\n\n\n\n(k) V11\n\n\n\n\n\n\n\n(l) V12\n\n\n\n\n\n\n\n\n\n(m) V13\n\n\n\n\n\n\n\n(n) V14\n\n\n\n\n\n\n\n(o) V15\n\n\n\n\n\n\n\n(p) V16\n\n\n\n\n\n\n\n\n\n(q) V17\n\n\n\n\n\n\n\n(r) V18\n\n\n\n\n\n\n\n(s) V19\n\n\n\n\n\n\n\n(t) V20\n\n\n\n\n\n\n\n\n\n(u) V21\n\n\n\n\n\n\n\n(v) V22\n\n\n\n\n\n\n\n(w) V23\n\n\n\n\n\n\n\n(x) V24\n\n\n\n\n\n\n\n\n\n(y) V25\n\n\n\n\n\n\n\n(z) V26\n\n\n\n\n\n\n\n({) V27\n\n\n\n\n\n\n\n(|) V28\n\n\n\n\n\n\n\n\n\n(}) Amount\n\n\n\n\nFigure 2: Distribution plots for all features in Kaggle credit card fraud dataset"
-  },
-  {
-    "objectID": "kaggle_cc_fraud.html#there-are-no-binary-features",
-    "href": "kaggle_cc_fraud.html#there-are-no-binary-features",
-    "title": "Three reasons why you should not use the Kaggle credit card fraud dataset",
-    "section": "There are no binary features",
-    "text": "There are no binary features"
-  },
-  {
     "objectID": "posts/PyMinhash.html",
     "href": "posts/PyMinhash.html",
     "title": "Finding duplicate records using PyMinHash",
@@ -123,7 +88,7 @@
     "href": "posts/hyperparameter_tuning_spark.html#create-combinations-of-hyperparameter-values",
     "title": "Distributed hyperparameter tuning of Scikit-learn models in Spark",
     "section": "Create combinations of hyperparameter values",
-    "text": "Create combinations of hyperparameter values\nFirst, we’re going to create hyperparameter combinations that we want to test our model for. Below is a helper functions to create all combinations for a param_grid that contains the arguments and the values to test for.\n\nimport numpy as np\nfrom itertools import product\n\n\ndef create_hyperparameter_combinations(param_grid):\n    combinations = list(product(*param_grid.values()))\n    return [dict(zip(param_grid.keys(), x)) for x in combinations]\n\nSo if our desired hyperparameter space is as follows…\n\nparam_grid = {'max_features': ['auto', 0.1, 0.3], 'min_samples_leaf': [None, 50]}\n\n…then the combination of these two hyperparameters and their values is obtained by:\n\ncreate_hyperparameter_combinations(param_grid)\n\n[{'max_features': 'auto', 'min_samples_leaf': None},\n {'max_features': 'auto', 'min_samples_leaf': 50},\n {'max_features': 0.1, 'min_samples_leaf': None},\n {'max_features': 0.1, 'min_samples_leaf': 50},\n {'max_features': 0.3, 'min_samples_leaf': None},\n {'max_features': 0.3, 'min_samples_leaf': 50}]"
+    "text": "Create combinations of hyperparameter values\nFirst, we’re going to create hyperparameter combinations that we want to test our model for. Below is a helper function to create all combinations for a param_grid that contains the arguments and the values to test for.\n\nimport numpy as np\nfrom itertools import product\n\n\ndef create_hyperparameter_combinations(param_grid):\n    combinations = list(product(*param_grid.values()))\n    return [dict(zip(param_grid.keys(), x)) for x in combinations]\n\nSo if our desired hyperparameter space is as follows…\n\nparam_grid = {'max_features': ['auto', 0.1, 0.3], 'min_samples_leaf': [None, 50]}\n\n…then the combination of these two hyperparameters and their values is obtained by:\n\ncreate_hyperparameter_combinations(param_grid)\n\n[{'max_features': 'auto', 'min_samples_leaf': None},\n {'max_features': 'auto', 'min_samples_leaf': 50},\n {'max_features': 0.1, 'min_samples_leaf': None},\n {'max_features': 0.1, 'min_samples_leaf': 50},\n {'max_features': 0.3, 'min_samples_leaf': None},\n {'max_features': 0.3, 'min_samples_leaf': 50}]"
   },
   {
     "objectID": "posts/hyperparameter_tuning_spark.html#create-evaluation-function",
@@ -137,7 +102,7 @@
     "href": "posts/hyperparameter_tuning_spark.html#distribute-the-evaluation-function-in-spark",
     "title": "Distributed hyperparameter tuning of Scikit-learn models in Spark",
     "section": "Distribute the evaluation function in Spark",
-    "text": "Distribute the evaluation function in Spark\nThe next step is to distribute the hyperparameter combinations and use our evaluation function to calculate model performance metrics for these hyperparameter values. This is done in the function below.\n\nfrom pyspark.sql import types as T\n\ndef get_hyperparameter_results(spark_session, base_clf, X, y, \n                               hyperpar_combinations, cv=5):\n    hyperpar_combinations_json = [json.dumps(x) for x in hyperpar_combinations]\n    hyperpars_rdd = spark_session.sparkContext.parallelize(hyperpar_combinations_json, \n                                                           len(hyperpar_combinations_json))\n\n    rdd_map_result = hyperpars_rdd.map(lambda x: evaluate_clf(base_clf, x, X, y, cv))\n\n    result_schema = T.StructType([T.StructField('hyperpars', T.StringType()),\n                                  T.StructField('mean_train_score', T.FloatType()),\n                                  T.StructField('mean_test_score', T.FloatType()),\n                                  ])\n\n    result_sdf = spark_session.createDataFrame(rdd_map_result, schema=result_schema)\n    result = (result_sdf.toPandas()\n              .sort_values('mean_test_score', ascending=False)\n              .reset_index(drop=True))\n\n    result['hyperpars'] = result['hyperpars'].apply(json.loads)\n    return result\n\nIn the first line we convert the dicts to json strings. Then, we parallelize these jsons by creating an RDD. The evaluate_clf can is mapped to this RDD. The schema of the result is defined as a StructType containing StructFields. Then a Spark dataframe is created that hold the results of our hyperparameter tuning. We convert this Spark dataframe to a Pandas dataframe in order to explore the results easily. As a last step we convert the jsons back to dicts."
+    "text": "Distribute the evaluation function in Spark\nThe next step is to distribute the hyperparameter combinations and use our evaluation function to calculate model performance metrics for these hyperparameter values. This is done in the function below.\n\nfrom pyspark.sql import types as T\n\ndef get_hyperparameter_results(spark_session, base_clf, X, y, \n                               hyperpar_combinations, cv=5):\n    hyperpar_combinations_json = [json.dumps(x) for x in hyperpar_combinations]\n    hyperpars_rdd = spark_session.sparkContext.parallelize(hyperpar_combinations_json, \n                                                           len(hyperpar_combinations_json))\n\n    rdd_map_result = hyperpars_rdd.map(lambda x: evaluate_clf(base_clf, x, X, y, cv))\n\n    result_schema = T.StructType([T.StructField('hyperpars', T.StringType()),\n                                  T.StructField('mean_train_score', T.FloatType()),\n                                  T.StructField('mean_test_score', T.FloatType()),\n                                  ])\n\n    result_sdf = spark_session.createDataFrame(rdd_map_result, schema=result_schema)\n    result = (result_sdf.toPandas()\n              .sort_values('mean_test_score', ascending=False)\n              .reset_index(drop=True))\n\n    result['hyperpars'] = result['hyperpars'].apply(json.loads)\n    return result\n\nIn the first line we convert the dicts to json strings. Then, we parallelize these jsons by creating an RDD. The evaluate_clf is mapped to this RDD. The schema of the result is defined as a StructType containing StructFields. Then a Spark dataframe is created that hold the results of our hyperparameter tuning. We convert this Spark dataframe to a Pandas dataframe in order to explore the results easily. As a last step we convert the jsons back to dicts."
   },
   {
     "objectID": "posts/hyperparameter_tuning_spark.html#full-working-example",
