@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.324">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="keywords" content="data science, advanced analytics, machine learning, AI, artificial intelligence, Python, Spark, PySpark, modelling, scikit-learn, sklearn, tensorflow, keras, neural network, transaction monitoring, aggregation learning, deduplication, deduplipy, spark-matcher, entity resolution">
+
+<title>Frits Hermans - Rule mining with text features using Ripper</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./favicon.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-DEDM5V9GGM"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Frits Hermans</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html" rel="" target="">
+ <span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./about.html" rel="" target="">
+ <span class="menu-text">About</span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools ms-auto tools-wide">
+    <a href="https://www.linkedin.com/in/frits-hermans-data-scientist/" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-linkedin"></i></a>
+    <a href="https://www.github.com/fritshermans" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Rule mining with text features using Ripper</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install wittgenstein</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><a href="https://www.kaggle.com/datasets/zynicide/wine-reviews">Kaggle Wine Reviews dataset</a></p>
+<p><a href="https://github.com/imoscovitz/wittgenstein">ripper</a></p>
+<p><a href="https://towardsdatascience.com/how-to-perform-explainable-machine-learning-classification-without-any-trees-873db4192c68">explanation</a></p>
+<div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2024-11-17T19:24:20.060399Z&quot;,&quot;iopub.status.busy&quot;:&quot;2024-11-17T19:24:20.059542Z&quot;,&quot;iopub.status.idle&quot;:&quot;2024-11-17T19:24:20.118304Z&quot;,&quot;shell.execute_reply&quot;:&quot;2024-11-17T19:24:20.117765Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2024-11-17T19:24:20.060339Z&quot;}" data-tags="[]" data-execution_count="3">
+<div class="cell-output cell-output-display" data-execution_count="3">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">description</th>
+<th data-quarto-table-cell-role="th">country</th>
+<th data-quarto-table-cell-role="th">variety</th>
+<th data-quarto-table-cell-role="th">price</th>
+<th data-quarto-table-cell-role="th">excellent</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">74061</td>
+<td>Old-gold in color, this wine has concentrated flavors with an almost medicinal intensity. Old wo...</td>
+<td>Portugal</td>
+<td>Port</td>
+<td>200.0</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">98873</td>
+<td>Already a modern classic of the Douro, this red wine from Niepoort, with its baked apple and bla...</td>
+<td>Portugal</td>
+<td>Portuguese Red</td>
+<td>27.0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">144736</td>
+<td>My experience of Swan Pinots is that they've been made the same way for a long time, and require...</td>
+<td>US</td>
+<td>Pinot Noir</td>
+<td>45.0</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">138479</td>
+<td>In keeping with the austerity of the Dão landscape, this is a taut, mineral-inspired wine, with ...</td>
+<td>Portugal</td>
+<td>Portuguese Red</td>
+<td>9.0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">114502</td>
+<td>Opens with a lovely bouquet of lemon and tart pineapple fruit with anise, mineral and tobacco ac...</td>
+<td>US</td>
+<td>Chardonnay</td>
+<td>45.0</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2024-11-17T19:24:46.432651Z&quot;,&quot;iopub.status.busy&quot;:&quot;2024-11-17T19:24:46.431727Z&quot;,&quot;iopub.status.idle&quot;:&quot;2024-11-17T19:24:47.058004Z&quot;,&quot;shell.execute_reply&quot;:&quot;2024-11-17T19:24:47.057667Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2024-11-17T19:24:46.432589Z&quot;}" data-tags="[]" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> CountVectorizer</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>cv <span class="op">=</span> CountVectorizer().fit(df[<span class="st">'description'</span>])</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(cv.vocabulary_)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<pre><code>4299</code></pre>
+</div>
+</div>
+<div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2024-11-17T19:26:13.985495Z&quot;,&quot;iopub.status.busy&quot;:&quot;2024-11-17T19:26:13.984595Z&quot;,&quot;iopub.status.idle&quot;:&quot;2024-11-17T19:26:14.006038Z&quot;,&quot;shell.execute_reply&quot;:&quot;2024-11-17T19:26:14.004215Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2024-11-17T19:26:13.985432Z&quot;}" data-tags="[]" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.base <span class="im">import</span> TransformerMixin, BaseEstimator</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> make_pipeline</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> TopTokenTransformer(TransformerMixin, BaseEstimator):</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, col, top_n<span class="op">=</span><span class="dv">5</span>, vectorizer_kwargs<span class="op">=</span>{}):</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.col <span class="op">=</span> col</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.top_n <span class="op">=</span> top_n</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.vectorizer_kwargs <span class="op">=</span> vectorizer_kwargs</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">@staticmethod</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get_top_tokens(feature_names, coefs, top_n):</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>        <span class="co"># tokens = pd.DataFrame({'token': feature_names, 'coef':coefs})</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>        <span class="co"># tokens['abs_coef'] = tokens['coef'].abs()</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>        <span class="co"># return (tokens.sort_values('abs_coef', ascending=False)</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>        <span class="co">#         .head(top_n)['token'].tolist())</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> [x <span class="cf">for</span> x, _ <span class="kw">in</span> <span class="bu">sorted</span>(<span class="bu">zip</span>(feature_names, coefs), key<span class="op">=</span><span class="kw">lambda</span> pair: <span class="bu">abs</span>(pair[<span class="dv">1</span>]), reverse<span class="op">=</span><span class="va">True</span>)]</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> fit(<span class="va">self</span>, X, y):</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>        pipe <span class="op">=</span> make_pipeline(CountVectorizer(<span class="op">**</span><span class="va">self</span>.vectorizer_kwargs),</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>                            LogisticRegression(class_weight<span class="op">=</span><span class="st">'balanced'</span>, max_iter<span class="op">=</span><span class="dv">1000</span>))</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>        pipe.fit(X[<span class="va">self</span>.col],y)</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>        vec <span class="op">=</span> pipe.steps[<span class="dv">0</span>][<span class="dv">1</span>]</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>        clf <span class="op">=</span> pipe.steps[<span class="dv">1</span>][<span class="dv">1</span>]</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>        feature_names <span class="op">=</span> vec.get_feature_names_out()</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>        coefs <span class="op">=</span> clf.coef_[<span class="dv">0</span>]</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.top_tokens_ <span class="op">=</span> TopTokenTransformer.get_top_tokens(feature_names, coefs, <span class="va">self</span>.top_n)</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.vec_top <span class="op">=</span> CountVectorizer(vocabulary<span class="op">=</span><span class="va">self</span>.top_tokens_, <span class="op">**</span><span class="va">self</span>.vectorizer_kwargs)</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> transform(<span class="va">self</span>, X):</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.vec_top.transform(X[<span class="va">self</span>.col]).toarray()</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get_feature_names_out(<span class="va">self</span>, input_features<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.top_tokens_</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>description: text</li>
+<li>categorical:
+<ul>
+<li>country</li>
+<li>variety</li>
+</ul></li>
+<li>price: numeric</li>
+</ul>
+<div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2024-11-17T19:26:15.256466Z&quot;,&quot;iopub.status.busy&quot;:&quot;2024-11-17T19:26:15.255753Z&quot;,&quot;iopub.status.idle&quot;:&quot;2024-11-17T19:26:15.267318Z&quot;,&quot;shell.execute_reply&quot;:&quot;2024-11-17T19:26:15.265991Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2024-11-17T19:26:15.256397Z&quot;}" data-scrolled="true" data-tags="[]" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.compose <span class="im">import</span> ColumnTransformer</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> OneHotEncoder</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>transformer <span class="op">=</span> (ColumnTransformer([</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'toptokens'</span>, TopTokenTransformer(<span class="st">'description'</span>, top_n<span class="op">=</span><span class="dv">10</span>), [<span class="st">'description'</span>]),</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'categorical'</span>, OneHotEncoder(max_categories<span class="op">=</span><span class="dv">5</span>, sparse_output<span class="op">=</span><span class="va">False</span>), [<span class="st">'country'</span>, <span class="st">'variety'</span>]),</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'numeric'</span>, <span class="st">'passthrough'</span>, [<span class="st">'price'</span>])])</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>               .set_output(transform<span class="op">=</span><span class="st">'pandas'</span>))  <span class="co"># needed to pass feature names to ripper</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2024-11-17T19:26:16.612990Z&quot;,&quot;iopub.status.busy&quot;:&quot;2024-11-17T19:26:16.612069Z&quot;,&quot;iopub.status.idle&quot;:&quot;2024-11-17T19:27:01.034582Z&quot;,&quot;shell.execute_reply&quot;:&quot;2024-11-17T19:27:01.034199Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2024-11-17T19:26:16.612929Z&quot;}" data-scrolled="true" data-tags="[]" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> wittgenstein <span class="im">import</span> RIPPER</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>pipe <span class="op">=</span> make_pipeline(transformer, RIPPER(random_state<span class="op">=</span><span class="dv">0</span>))</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>pipe.fit(df[[<span class="st">'description'</span>, <span class="st">'country'</span>, <span class="st">'variety'</span>, <span class="st">'price'</span>]], df[<span class="st">'excellent'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="22">
+<style>#sk-container-id-4 {color: black;background-color: white;}#sk-container-id-4 pre{padding: 0;}#sk-container-id-4 div.sk-toggleable {background-color: white;}#sk-container-id-4 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-4 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-4 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-4 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-4 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-4 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-4 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-4 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-4 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-4 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-4 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-4 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-4 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-4 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-4 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-4 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-4 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-4 div.sk-item {position: relative;z-index: 1;}#sk-container-id-4 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-4 div.sk-item::before, #sk-container-id-4 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-4 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-4 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-4 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-4 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-4 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-4 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-4 div.sk-label-container {text-align: center;}#sk-container-id-4 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-4 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-4" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>Pipeline(steps=[('columntransformer',
+                 ColumnTransformer(transformers=[('toptokens',
+                                                  TopTokenTransformer(col='description',
+                                                                      top_n=10),
+                                                  ['description']),
+                                                 ('categorical',
+                                                  OneHotEncoder(max_categories=5,
+                                                                sparse_output=False),
+                                                  ['country', 'variety']),
+                                                 ('numeric', 'passthrough',
+                                                  ['price'])])),
+                ('ripper',
+                 &lt;RIPPER(dl_allowance=64, random_state=0, prune_size=0.33, max_rules=None, max_total_conds=None, k=2, verbosity=0, max_rule_conds=None, n_discretize_bins=10, alpha=1.0) with fit ruleset&gt;)])</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-28" type="checkbox"><label for="sk-estimator-id-28" class="sk-toggleable__label sk-toggleable__label-arrow">Pipeline</label><div class="sk-toggleable__content"><pre>Pipeline(steps=[('columntransformer',
+                 ColumnTransformer(transformers=[('toptokens',
+                                                  TopTokenTransformer(col='description',
+                                                                      top_n=10),
+                                                  ['description']),
+                                                 ('categorical',
+                                                  OneHotEncoder(max_categories=5,
+                                                                sparse_output=False),
+                                                  ['country', 'variety']),
+                                                 ('numeric', 'passthrough',
+                                                  ['price'])])),
+                ('ripper',
+                 &lt;RIPPER(dl_allowance=64, random_state=0, prune_size=0.33, max_rules=None, max_total_conds=None, k=2, verbosity=0, max_rule_conds=None, n_discretize_bins=10, alpha=1.0) with fit ruleset&gt;)])</pre></div></div></div><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-29" type="checkbox"><label for="sk-estimator-id-29" class="sk-toggleable__label sk-toggleable__label-arrow">columntransformer: ColumnTransformer</label><div class="sk-toggleable__content"><pre>ColumnTransformer(transformers=[('toptokens',
+                                 TopTokenTransformer(col='description',
+                                                     top_n=10),
+                                 ['description']),
+                                ('categorical',
+                                 OneHotEncoder(max_categories=5,
+                                               sparse_output=False),
+                                 ['country', 'variety']),
+                                ('numeric', 'passthrough', ['price'])])</pre></div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-30" type="checkbox"><label for="sk-estimator-id-30" class="sk-toggleable__label sk-toggleable__label-arrow">toptokens</label><div class="sk-toggleable__content"><pre>['description']</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-31" type="checkbox"><label for="sk-estimator-id-31" class="sk-toggleable__label sk-toggleable__label-arrow">TopTokenTransformer</label><div class="sk-toggleable__content"><pre>TopTokenTransformer(col='description', top_n=10)</pre></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-32" type="checkbox"><label for="sk-estimator-id-32" class="sk-toggleable__label sk-toggleable__label-arrow">categorical</label><div class="sk-toggleable__content"><pre>['country', 'variety']</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-33" type="checkbox"><label for="sk-estimator-id-33" class="sk-toggleable__label sk-toggleable__label-arrow">OneHotEncoder</label><div class="sk-toggleable__content"><pre>OneHotEncoder(max_categories=5, sparse_output=False)</pre></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-34" type="checkbox"><label for="sk-estimator-id-34" class="sk-toggleable__label sk-toggleable__label-arrow">numeric</label><div class="sk-toggleable__content"><pre>['price']</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-35" type="checkbox"><label for="sk-estimator-id-35" class="sk-toggleable__label sk-toggleable__label-arrow">passthrough</label><div class="sk-toggleable__content"><pre>passthrough</pre></div></div></div></div></div></div></div></div><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-36" type="checkbox"><label for="sk-estimator-id-36" class="sk-toggleable__label sk-toggleable__label-arrow">RIPPER</label><div class="sk-toggleable__content"><pre>&lt;RIPPER(dl_allowance=64, random_state=0, prune_size=0.33, max_rules=None, max_total_conds=None, k=2, verbosity=0, max_rule_conds=None, n_discretize_bins=10, alpha=1.0)&gt;</pre></div></div></div></div></div></div></div>
+</div>
+</div>
+<div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2024-11-17T19:26:04.716034Z&quot;,&quot;iopub.status.busy&quot;:&quot;2024-11-17T19:26:04.714928Z&quot;,&quot;iopub.status.idle&quot;:&quot;2024-11-17T19:26:04.727139Z&quot;,&quot;shell.execute_reply&quot;:&quot;2024-11-17T19:26:04.725605Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2024-11-17T19:26:04.715965Z&quot;}" data-tags="[]" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>rip <span class="op">=</span> pipe.steps[<span class="op">-</span><span class="dv">1</span>][<span class="dv">1</span>]</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>rip.selected_features_</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="19">
+<pre><code>['numeric__price',
+ 'categorical__variety_Cabernet Sauvignon',
+ 'categorical__country_Italy',
+ 'toptokens__elegant',
+ 'categorical__country_US',
+ 'toptokens__rich',
+ 'toptokens__through',
+ 'toptokens__complex',
+ 'toptokens__intense',
+ 'toptokens__structure']</code></pre>
+</div>
+</div>
+<div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2024-11-17T19:27:01.035509Z&quot;,&quot;iopub.status.busy&quot;:&quot;2024-11-17T19:27:01.035392Z&quot;,&quot;iopub.status.idle&quot;:&quot;2024-11-17T19:27:01.038408Z&quot;,&quot;shell.execute_reply&quot;:&quot;2024-11-17T19:27:01.038029Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2024-11-17T19:27:01.035498Z&quot;}" data-tags="[]" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>rip <span class="op">=</span> pipe.steps[<span class="op">-</span><span class="dv">1</span>][<span class="dv">1</span>]</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>rip.selected_features_</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="23">
+<pre><code>['numeric__price',
+ 'toptokens__for',
+ 'toptokens__the',
+ 'toptokens__rich',
+ 'toptokens__now',
+ 'toptokens__complex',
+ 'toptokens__great',
+ 'toptokens__berry',
+ 'toptokens__aromas',
+ 'toptokens__mouth',
+ 'toptokens__elegant']</code></pre>
+</div>
+</div>
+<div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2024-10-14T19:19:07.026163Z&quot;,&quot;iopub.status.busy&quot;:&quot;2024-10-14T19:19:07.025883Z&quot;,&quot;iopub.status.idle&quot;:&quot;2024-10-14T19:19:07.030133Z&quot;,&quot;shell.execute_reply&quot;:&quot;2024-10-14T19:19:07.029615Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2024-10-14T19:19:07.026140Z&quot;}" data-tags="[]" data-execution_count="88">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>rip.out_model()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[numeric__price=&gt;60.0 ^ categorical__country_US=0.0 ^ categorical__country_France=1.0 ^ categorical__variety_Chardonnay=1.0 ^ toptokens__glorious=1] V
+[numeric__price=&gt;60.0 ^ categorical__country_US=0.0 ^ categorical__country_France=1.0 ^ categorical__variety_Chardonnay=1.0] V
+[numeric__price=&gt;60.0 ^ categorical__variety_CabernetSauvignon=0.0 ^ categorical__country_France=1.0 ^ toptokens__2025=1] V
+[numeric__price=&gt;60.0 ^ categorical__variety_CabernetSauvignon=0.0 ^ categorical__country_France=1.0 ^ categorical__variety_infrequent_sklearn=0.0 ^ categorical__variety_PinotNoir=0.0] V
+[numeric__price=&gt;60.0 ^ categorical__variety_CabernetSauvignon=0.0 ^ categorical__country_France=1.0 ^ toptokens__93=1] V
+[numeric__price=&gt;60.0 ^ categorical__variety_CabernetSauvignon=0.0 ^ categorical__country_France=1.0] V
+[numeric__price=&gt;60.0 ^ categorical__variety_CabernetSauvignon=0.0 ^ categorical__country_Italy=1.0 ^ categorical__variety_infrequent_sklearn=0.0 ^ categorical__variety_Chardonnay=1.0] V
+[numeric__price=&gt;60.0 ^ categorical__variety_CabernetSauvignon=0.0 ^ categorical__country_Italy=1.0 ^ categorical__variety_RedBlend=1.0] V
+[numeric__price=&gt;60.0 ^ categorical__variety_CabernetSauvignon=0.0 ^ categorical__country_Italy=1.0 ^ toptokens__glorious=1] V
+[numeric__price=&gt;60.0 ^ categorical__variety_CabernetSauvignon=0.0 ^ categorical__country_Italy=1.0] V
+[numeric__price=42.0-60.0 ^ categorical__country_Italy=1.0 ^ categorical__variety_infrequent_sklearn=0.0 ^ categorical__variety_RedBlend=0.0] V
+[numeric__price=42.0-60.0 ^ categorical__country_US=0.0 ^ categorical__country_France=0.0 ^ categorical__country_Spain=0.0 ^ categorical__variety_infrequent_sklearn=1.0 ^ categorical__country_Italy=0.0 ^ toptokens__2025=1] V
+[numeric__price=42.0-60.0 ^ categorical__country_Italy=1.0 ^ categorical__variety_RedBlend=1.0] V
+[numeric__price=42.0-60.0 ^ categorical__variety_CabernetSauvignon=0.0 ^ categorical__country_infrequent_sklearn=1.0 ^ categorical__variety_infrequent_sklearn=1.0] V
+[numeric__price=42.0-60.0 ^ categorical__country_Italy=1.0] V
+[numeric__price=&gt;60.0 ^ categorical__variety_CabernetSauvignon=0.0 ^ categorical__variety_RedBlend=0.0 ^ categorical__country_infrequent_sklearn=1.0 ^ categorical__variety_PinotNoir=0.0 ^ toptokens__2025=1] V
+[numeric__price=&gt;60.0 ^ categorical__variety_CabernetSauvignon=0.0 ^ categorical__variety_RedBlend=0.0 ^ categorical__variety_infrequent_sklearn=0.0 ^ categorical__variety_Chardonnay=1.0] V
+[numeric__price=&gt;60.0 ^ categorical__variety_CabernetSauvignon=0.0 ^ categorical__variety_PinotNoir=1.0 ^ categorical__country_US=1.0] V
+[numeric__price=42.0-60.0 ^ categorical__variety_PinotNoir=1.0 ^ categorical__country_US=1.0 ^ toptokens__2025=1] V
+[numeric__price=42.0-60.0 ^ categorical__variety_PinotNoir=1.0 ^ categorical__country_US=1.0] V
+[numeric__price=&gt;60.0 ^ categorical__variety_infrequent_sklearn=1.0 ^ categorical__country_infrequent_sklearn=1.0] V
+[numeric__price=34.0-42.0 ^ categorical__country_US=0.0 ^ categorical__variety_infrequent_sklearn=1.0 ^ categorical__country_infrequent_sklearn=1.0 ^ toptokens__2025=1] V
+[numeric__price=42.0-60.0 ^ categorical__variety_Chardonnay=1.0 ^ categorical__country_France=0.0 ^ categorical__country_US=1.0] V
+[numeric__price=34.0-42.0 ^ categorical__country_US=0.0 ^ categorical__variety_infrequent_sklearn=1.0] V
+[numeric__price=&gt;60.0] V
+[numeric__price=32.0-34.0 ^ categorical__country_France=1.0 ^ toptokens__92=1] V
+[numeric__price=42.0-60.0 ^ categorical__variety_infrequent_sklearn=1.0 ^ categorical__country_France=1.0 ^ toptokens__2025=1] V
+[numeric__price=42.0-60.0 ^ categorical__country_France=1.0 ^ categorical__variety_infrequent_sklearn=1.0] V
+[numeric__price=42.0-60.0] V
+[numeric__price=32.0-34.0 ^ categorical__country_France=1.0 ^ toptokens__91=1] V
+[numeric__price=34.0-42.0 ^ categorical__variety_Chardonnay=1.0 ^ categorical__country_US=1.0] V
+[numeric__price=32.0-34.0 ^ categorical__country_France=1.0 ^ toptokens__93=1] V
+[numeric__price=34.0-42.0 ^ categorical__country_Italy=1.0 ^ categorical__variety_Chardonnay=1.0] V
+[numeric__price=34.0-42.0 ^ categorical__country_Italy=1.0 ^ categorical__variety_CabernetSauvignon=1.0] V
+[numeric__price=34.0-42.0 ^ categorical__country_infrequent_sklearn=0.0 ^ categorical__country_Italy=1.0] V
+[numeric__price=32.0-34.0 ^ categorical__country_France=1.0 ^ toptokens__88=0 ^ toptokens__87=0 ^ categorical__variety_PinotNoir=1.0] V
+[numeric__price=34.0-42.0 ^ categorical__country_US=1.0 ^ toptokens__2025=1] V
+[numeric__price=32.0-34.0 ^ categorical__country_France=1.0 ^ toptokens__88=0 ^ toptokens__87=0 ^ categorical__variety_Chardonnay=1.0] V
+[numeric__price=34.0-42.0 ^ categorical__country_US=1.0 ^ categorical__variety_infrequent_sklearn=1.0] V
+[numeric__price=32.0-34.0 ^ categorical__country_France=1.0 ^ toptokens__88=0 ^ toptokens__87=0 ^ categorical__variety_infrequent_sklearn=1.0] V
+[numeric__price=26.0-32.0 ^ categorical__country_infrequent_sklearn=1.0 ^ categorical__variety_infrequent_sklearn=1.0 ^ toptokens__88=0] V
+[numeric__price=26.0-32.0 ^ categorical__variety_PinotNoir=0.0 ^ categorical__variety_Chardonnay=1.0 ^ categorical__country_US=1.0 ^ toptokens__glycerin=0] V
+[numeric__price=26.0-32.0 ^ categorical__country_US=0.0 ^ categorical__variety_PinotNoir=0.0 ^ categorical__country_France=1.0 ^ categorical__variety_infrequent_sklearn=1.0] V
+[numeric__price=34.0-42.0 ^ categorical__country_US=1.0 ^ categorical__variety_PinotNoir=1.0] V
+[numeric__price=32.0-34.0 ^ categorical__country_France=0.0 ^ categorical__country_infrequent_sklearn=1.0 ^ toptokens__2025=1] V
+[numeric__price=32.0-34.0 ^ categorical__country_France=0.0 ^ categorical__country_infrequent_sklearn=1.0 ^ categorical__variety_PinotNoir=0.0 ^ categorical__variety_CabernetSauvignon=1.0] V
+[numeric__price=32.0-34.0 ^ categorical__country_France=0.0 ^ categorical__variety_RedBlend=1.0 ^ categorical__country_Italy=1.0] V
+[numeric__price=26.0-32.0 ^ categorical__variety_PinotNoir=0.0 ^ categorical__country_US=0.0 ^ categorical__variety_RedBlend=1.0 ^ categorical__country_Italy=1.0] V
+[numeric__price=26.0-32.0 ^ categorical__variety_PinotNoir=0.0 ^ categorical__country_infrequent_sklearn=1.0 ^ categorical__variety_Chardonnay=1.0]]</code></pre>
+</div>
+</div>
+<div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2024-10-14T19:19:07.034593Z&quot;,&quot;iopub.status.busy&quot;:&quot;2024-10-14T19:19:07.033765Z&quot;,&quot;iopub.status.idle&quot;:&quot;2024-10-14T19:19:07.883934Z&quot;,&quot;shell.execute_reply&quot;:&quot;2024-10-14T19:19:07.883366Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2024-10-14T19:19:07.034547Z&quot;}" data-tags="[]" data-execution_count="89">
+<div class="cell-output cell-output-display" data-execution_count="89">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">description</th>
+<th data-quarto-table-cell-role="th">excellent</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">144700</td>
+<td>90-92 Barrel sample. Very citrusy fruits, with spice, new wood and delicious, almost tropical fl...</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">144701</td>
+<td>90-92 Barrel sample. A ripe, creamy wine, which has great poise and freshness. There's just a to...</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">144711</td>
+<td>90-92 Barrel sample. Large-scale renovations to the vineyard and the advice of Patrick Valette a...</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">144712</td>
+<td>90-92 Barrel sample. A hugely ripe wine with dark tannins, this wine broods with intense, tough ...</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">146194</td>
+<td>As with the Merlot this is Ash Hollow fruit (92%), hence young; it seems to represent a signific...</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2024-10-14T19:19:07.885311Z&quot;,&quot;iopub.status.busy&quot;:&quot;2024-10-14T19:19:07.885052Z&quot;,&quot;iopub.status.idle&quot;:&quot;2024-10-14T19:19:07.889517Z&quot;,&quot;shell.execute_reply&quot;:&quot;2024-10-14T19:19:07.889038Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2024-10-14T19:19:07.885292Z&quot;}" data-scrolled="true" data-tags="[]" data-execution_count="90">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>transformer <span class="op">=</span> (ColumnTransformer([</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'toptokens'</span>, TopTokenTransformer(<span class="st">'description'</span>, top_n<span class="op">=</span><span class="dv">10</span>, </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                        vectorizer_kwargs<span class="op">=</span>{<span class="st">'token_pattern'</span>: <span class="vs">r'\b[a-zA-Z]+\b'</span>}), [<span class="st">'description'</span>]),</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'categorical'</span>, OneHotEncoder(max_categories<span class="op">=</span><span class="dv">5</span>, sparse_output<span class="op">=</span><span class="va">False</span>), [<span class="st">'country'</span>, <span class="st">'variety'</span>]),</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'numeric'</span>, <span class="st">'passthrough'</span>, [<span class="st">'price'</span>])])</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>               .set_output(transform<span class="op">=</span><span class="st">'pandas'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2024-10-14T19:19:07.890656Z&quot;,&quot;iopub.status.busy&quot;:&quot;2024-10-14T19:19:07.890450Z&quot;,&quot;iopub.status.idle&quot;:&quot;2024-10-14T19:28:06.920418Z&quot;,&quot;shell.execute_reply&quot;:&quot;2024-10-14T19:28:06.919488Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2024-10-14T19:19:07.890638Z&quot;}" data-scrolled="true" data-tags="[]" data-execution_count="91">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>pipe <span class="op">=</span> make_pipeline(transformer, RIPPER(random_state<span class="op">=</span><span class="dv">0</span>))</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>pipe.fit(df[[<span class="st">'description'</span>, <span class="st">'country'</span>, <span class="st">'variety'</span>, <span class="st">'price'</span>]], df[<span class="st">'excellent'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="91">
+<style>#sk-container-id-10 {color: black;background-color: white;}#sk-container-id-10 pre{padding: 0;}#sk-container-id-10 div.sk-toggleable {background-color: white;}#sk-container-id-10 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-10 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-10 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-10 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-10 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-10 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-10 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-10 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-10 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-10 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-10 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-10 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-10 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-10 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-10 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-10 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-10 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-10 div.sk-item {position: relative;z-index: 1;}#sk-container-id-10 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-10 div.sk-item::before, #sk-container-id-10 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-10 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-10 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-10 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-10 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-10 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-10 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-10 div.sk-label-container {text-align: center;}#sk-container-id-10 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-10 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-10" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>Pipeline(steps=[('columntransformer',
+                 ColumnTransformer(transformers=[('toptokens',
+                                                  TopTokenTransformer(col='description',
+                                                                      top_n=10,
+                                                                      vectorizer_kwargs={'token_pattern': '\\b[a-zA-Z]+\\b'}),
+                                                  ['description']),
+                                                 ('categorical',
+                                                  OneHotEncoder(max_categories=5,
+                                                                sparse_output=False),
+                                                  ['country', 'variety']),
+                                                 ('numeric', 'passthrough',
+                                                  ['price'])])),
+                ('ripper',
+                 &lt;RIPPER(random_state=0, verbosity=0, n_discretize_bins=10, alpha=1.0, max_rules=None, k=2, dl_allowance=64, max_total_conds=None, max_rule_conds=None, prune_size=0.33) with fit ruleset&gt;)])</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-82" type="checkbox"><label for="sk-estimator-id-82" class="sk-toggleable__label sk-toggleable__label-arrow">Pipeline</label><div class="sk-toggleable__content"><pre>Pipeline(steps=[('columntransformer',
+                 ColumnTransformer(transformers=[('toptokens',
+                                                  TopTokenTransformer(col='description',
+                                                                      top_n=10,
+                                                                      vectorizer_kwargs={'token_pattern': '\\b[a-zA-Z]+\\b'}),
+                                                  ['description']),
+                                                 ('categorical',
+                                                  OneHotEncoder(max_categories=5,
+                                                                sparse_output=False),
+                                                  ['country', 'variety']),
+                                                 ('numeric', 'passthrough',
+                                                  ['price'])])),
+                ('ripper',
+                 &lt;RIPPER(random_state=0, verbosity=0, n_discretize_bins=10, alpha=1.0, max_rules=None, k=2, dl_allowance=64, max_total_conds=None, max_rule_conds=None, prune_size=0.33) with fit ruleset&gt;)])</pre></div></div></div><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-83" type="checkbox"><label for="sk-estimator-id-83" class="sk-toggleable__label sk-toggleable__label-arrow">columntransformer: ColumnTransformer</label><div class="sk-toggleable__content"><pre>ColumnTransformer(transformers=[('toptokens',
+                                 TopTokenTransformer(col='description',
+                                                     top_n=10,
+                                                     vectorizer_kwargs={'token_pattern': '\\b[a-zA-Z]+\\b'}),
+                                 ['description']),
+                                ('categorical',
+                                 OneHotEncoder(max_categories=5,
+                                               sparse_output=False),
+                                 ['country', 'variety']),
+                                ('numeric', 'passthrough', ['price'])])</pre></div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-84" type="checkbox"><label for="sk-estimator-id-84" class="sk-toggleable__label sk-toggleable__label-arrow">toptokens</label><div class="sk-toggleable__content"><pre>['description']</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-85" type="checkbox"><label for="sk-estimator-id-85" class="sk-toggleable__label sk-toggleable__label-arrow">TopTokenTransformer</label><div class="sk-toggleable__content"><pre>TopTokenTransformer(col='description', top_n=10,
+                    vectorizer_kwargs={'token_pattern': '\\b[a-zA-Z]+\\b'})</pre></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-86" type="checkbox"><label for="sk-estimator-id-86" class="sk-toggleable__label sk-toggleable__label-arrow">categorical</label><div class="sk-toggleable__content"><pre>['country', 'variety']</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-87" type="checkbox"><label for="sk-estimator-id-87" class="sk-toggleable__label sk-toggleable__label-arrow">OneHotEncoder</label><div class="sk-toggleable__content"><pre>OneHotEncoder(max_categories=5, sparse_output=False)</pre></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-88" type="checkbox"><label for="sk-estimator-id-88" class="sk-toggleable__label sk-toggleable__label-arrow">numeric</label><div class="sk-toggleable__content"><pre>['price']</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-89" type="checkbox"><label for="sk-estimator-id-89" class="sk-toggleable__label sk-toggleable__label-arrow">passthrough</label><div class="sk-toggleable__content"><pre>passthrough</pre></div></div></div></div></div></div></div></div><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-90" type="checkbox"><label for="sk-estimator-id-90" class="sk-toggleable__label sk-toggleable__label-arrow">RIPPER</label><div class="sk-toggleable__content"><pre>&lt;RIPPER(random_state=0, verbosity=0, n_discretize_bins=10, alpha=1.0, max_rules=None, k=2, dl_allowance=64, max_total_conds=None, max_rule_conds=None, prune_size=0.33)&gt;</pre></div></div></div></div></div></div></div>
+</div>
+</div>
+<div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2024-10-14T19:28:06.922620Z&quot;,&quot;iopub.status.busy&quot;:&quot;2024-10-14T19:28:06.922332Z&quot;,&quot;iopub.status.idle&quot;:&quot;2024-10-14T19:28:06.932699Z&quot;,&quot;shell.execute_reply&quot;:&quot;2024-10-14T19:28:06.932050Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2024-10-14T19:28:06.922592Z&quot;}" data-tags="[]" data-execution_count="92">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>rip <span class="op">=</span> pipe.steps[<span class="op">-</span><span class="dv">1</span>][<span class="dv">1</span>]</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>rip.selected_features_</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="92">
+<pre><code>['numeric__price',
+ 'categorical__country_US',
+ 'categorical__variety_infrequent_sklearn',
+ 'categorical__country_infrequent_sklearn',
+ 'toptokens__greece',
+ 'categorical__variety_Chardonnay',
+ 'toptokens__sample',
+ 'categorical__country_France',
+ 'categorical__country_Italy',
+ 'categorical__variety_Red Blend',
+ 'categorical__variety_Cabernet Sauvignon',
+ 'categorical__variety_Pinot Noir']</code></pre>
+</div>
+</div>
+<div class="cell" data-execution="{&quot;iopub.execute_input&quot;:&quot;2024-10-14T19:28:06.934091Z&quot;,&quot;iopub.status.busy&quot;:&quot;2024-10-14T19:28:06.933848Z&quot;,&quot;iopub.status.idle&quot;:&quot;2024-10-14T19:28:06.937419Z&quot;,&quot;shell.execute_reply&quot;:&quot;2024-10-14T19:28:06.936914Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2024-10-14T19:28:06.934071Z&quot;}" data-tags="[]" data-execution_count="93">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>rip.out_model()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[numeric__price=&gt;60.0] V
+[numeric__price=42.0-60.0] V
+[numeric__price=34.0-42.0 ^ categorical__country_US=0.0 ^ categorical__variety_infrequent_sklearn=1.0 ^ categorical__country_infrequent_sklearn=1.0 ^ toptokens__greece=0] V
+[numeric__price=34.0-42.0 ^ categorical__variety_Chardonnay=1.0 ^ categorical__country_US=1.0] V
+[numeric__price=32.0-34.0 ^ toptokens__sample=1 ^ categorical__country_France=1.0] V
+[numeric__price=34.0-42.0 ^ categorical__country_Italy=1.0 ^ categorical__variety_infrequent_sklearn=0.0 ^ categorical__variety_RedBlend=0.0 ^ categorical__variety_CabernetSauvignon=1.0] V
+[numeric__price=34.0-42.0 ^ categorical__country_Italy=1.0 ^ categorical__variety_infrequent_sklearn=1.0] V
+[numeric__price=34.0-42.0 ^ categorical__country_France=1.0 ^ categorical__variety_infrequent_sklearn=1.0] V
+[numeric__price=34.0-42.0 ^ categorical__country_Italy=1.0 ^ categorical__variety_Chardonnay=1.0] V
+[numeric__price=34.0-42.0 ^ categorical__variety_PinotNoir=0.0 ^ categorical__country_Italy=1.0] V
+[numeric__price=34.0-42.0 ^ categorical__country_US=1.0 ^ categorical__variety_PinotNoir=1.0]]</code></pre>
+</div>
+</div>
+
+
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
