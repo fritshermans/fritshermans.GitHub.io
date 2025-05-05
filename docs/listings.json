@@ -3,6 +3,7 @@
     "listing": "/index.html",
     "items": [
       "/posts/aggregation_learning.html",
+      "/posts/optuna_spark.html",
       "/posts/Deduplipy.html",
       "/posts/hyperparameter_tuning_spark.html",
       "/posts/PyMinhash.html",
