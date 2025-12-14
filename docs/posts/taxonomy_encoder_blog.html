@@ -2,13 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.324">
+<meta name="generator" content="quarto-1.8.26">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="keywords" content="data science, advanced analytics, machine learning, AI, artificial intelligence, Python, Spark, PySpark, modelling, scikit-learn, sklearn, tensorflow, keras, neural network, transaction monitoring, aggregation learning, deduplication, deduplipy, spark-matcher, entity resolution">
 
-<title>Frits Hermans - Taxonomy feature encoding</title>
+<title>Taxonomy feature encoding – Frits Hermans</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -22,6 +22,7 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: middle;
 }
 /* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
@@ -58,7 +59,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -66,24 +67,34 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
 <link href="../favicon.png" rel="icon" type="image/png">
-<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b758ccaa5987ceb1b75504551e579abf.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-798981a92816dbb37ecbd556bec065b5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-4af85865f01f5d012ba76cce242fa5df.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-798981a92816dbb37ecbd556bec065b5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
   "panel-placement": "end",
   "type": "overlay",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -92,8 +103,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit"
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
   }
 }</script>
 <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-DEDM5V9GGM"></script>
@@ -105,46 +118,208 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 <link rel="stylesheet" href="../styles.css">
 </head>
 
-<body class="nav-fixed">
+<body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-dark ">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container">
+      <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">Frits Hermans</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../index.html" rel="" target="">
- <span class="menu-text">Home</span></a>
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../about.html" rel="" target="">
- <span class="menu-text">About</span></a>
+    <a class="nav-link" href="../about.html"> 
+<span class="menu-text">About</span></a>
   </li>  
 </ul>
-            <div class="quarto-navbar-tools ms-auto tools-wide">
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools tools-wide">
     <a href="https://www.linkedin.com/in/frits-hermans-data-scientist/" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-linkedin"></i></a>
     <a href="https://www.github.com/fritshermans" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
   <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
-          </div> <!-- /navcollapse -->
       </div> <!-- /container-fluid -->
     </nav>
 </header>
@@ -167,24 +342,14 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 </nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Taxonomy feature encoding</h1>
-</div>
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><h1 class="title display-7">Taxonomy feature encoding</h1></header>
 
 
+<header id="title-block-header">
 
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
 
 </header>
+
 
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
@@ -193,72 +358,76 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 </section>
 <section id="house-price-prediction" class="level2">
 <h2 class="anchored" data-anchor-id="house-price-prediction">House price prediction</h2>
-<p>When predicting house prices, zipcode is an example of a taxonomy bearing feature where we need different granularity for encoding the feature in different regions. <a href="#fig-ih">Figure&nbsp;1</a> shows average house prices in the Netherlands in 2023 per zipcode (source: <a href="https://www.cbs.nl">CBS</a>). We know that in cities house prices in different zones differ a lot, even if the zones are only a few kilometers away. In more rural areas, these differences are often much less prevalent. To illustrate this, <a href="#fig-ih2">Figure&nbsp;2</a> zooms in on Amsterdam (a) and the province of Limburg (b). Amsterdam is a relatively small city that has zones with house prices in the lower end and the most expensive houses in the country. The province of Limburg is a much larger area but has significantly less variation in house prices. Going back to our aim of encoding the zipcode feature; we need different granularity for cities than for the country side. The question is how to choose this granularity.</p>
-<div class="cell" data-execution_count="9">
+<p>When predicting house prices, zipcode is an example of a taxonomy bearing feature where we need different granularity for encoding the feature in different regions. <a href="#fig-ih" class="quarto-xref">Figure&nbsp;1</a> shows average house prices in the Netherlands in 2023 per zipcode (source: <a href="https://www.cbs.nl">CBS</a>). We know that in cities house prices in different zones differ a lot, even if the zones are only a few kilometers away. In more rural areas, these differences are often much less prevalent. To illustrate this, <a href="#fig-ih2" class="quarto-xref">Figure&nbsp;2</a> zooms in on Amsterdam (a) and the province of Limburg (b). Amsterdam is a relatively small city that has zones with house prices in the lower end and the most expensive houses in the country. The province of Limburg is a much larger area but has significantly less variation in house prices. Going back to our aim of encoding the zipcode feature; we need different granularity for cities than for the country side. The question is how to choose this granularity.</p>
+<div id="cell-fig-ih" class="cell" data-execution_count="9">
 <div class="cell-output cell-output-display">
-<div id="fig-ih" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="taxonomy_encoder_blog_files/figure-html/fig-ih-output-1.png" class="img-fluid figure-img"></p>
-<p></p><figcaption class="figure-caption">Figure&nbsp;1: House price per zip code in the Netherlands</figcaption><p></p>
+<div id="fig-ih" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ih-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="taxonomy_encoder_blog_files/figure-html/fig-ih-output-1.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ih-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: House price per zip code in the Netherlands
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<div id="fig-ih2" class="cell quarto-layout-panel" data-execution_count="10">
-<figure class="figure">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="cell-output cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-ih2-1" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="taxonomy_encoder_blog_files/figure-html/fig-ih2-output-1.png" class="img-fluid figure-img" data-ref-parent="fig-ih2"></p>
-<p></p><figcaption class="figure-caption">(a) City of Amsterdam</figcaption><p></p>
+<div id="fig-ih2" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ih2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="cell-output cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-ih2" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-ih2-1" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-ih2-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="taxonomy_encoder_blog_files/figure-html/fig-ih2-output-1.png" class="img-fluid figure-img" data-ref-parent="fig-ih2">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-ih2-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a) City of Amsterdam
+</figcaption>
 </figure>
 </div>
 </div>
-<div class="cell-output cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-ih2-2" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="taxonomy_encoder_blog_files/figure-html/fig-ih2-output-2.png" class="img-fluid figure-img" data-ref-parent="fig-ih2"></p>
-<p></p><figcaption class="figure-caption">(b) Province of Limburg</figcaption><p></p>
+<div class="cell-output cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-ih2" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-ih2-2" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-ih2-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="taxonomy_encoder_blog_files/figure-html/fig-ih2-output-2.png" class="img-fluid figure-img" data-ref-parent="fig-ih2">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-ih2-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b) Province of Limburg
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p></p><figcaption class="figure-caption">Figure&nbsp;2: House price average per zip code, note the difference in price homogeneity in cities vs rural areas</figcaption><p></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ih2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: House price average per zip code, note the difference in price homogeneity in cities vs rural areas
+</figcaption>
 </figure>
 </div>
-<p>Let’s use a decision tree regressor to create segments of zipcodes that are homogenous with respect to mean house prices. As I’m lacking a dataset with house prices of <em>individual</em> houses, I’m going to create such dataset by concatenating the CBS dataset 10 times and multiply house prices with a random factor between 0.9 and 1.1 to introduce some variation. The decision tree regressor is fitted with <code>max_leaf_nodes</code> set to 50. This means that the zipcodes will be placed in 50 segments. To illustrate the effectiveness of this method, I show in-sample predictions for the most expensive (<a href="#tbl-expensive">Table&nbsp;1</a>) and the least expensive areas (<a href="#tbl-cheap">Table&nbsp;2</a>). The two tables show encoded mean house prices, the range of zipcodes, the number of zipcodes in that range (apparently not all possible values are used as zipcodes!) and the cities where these zipcodes are in. Clearly, the most expensive areas are much smaller and require a higher granularity of zipcode encoding than areas with lower house prices. Note how Amsterdam has even three distinct zipcode areas in the country top 10. If we use these in-sample generated zipcode encodings in our model, we would make the mistake of information leakage. The house price of each house would be used to generate a feature that is used to predict that same house price. This is where the Taxonomy Encoder comes into play.</p>
+<p>Let’s use a decision tree regressor to create segments of zipcodes that are homogenous with respect to mean house prices. As I’m lacking a dataset with house prices of <em>individual</em> houses, I’m going to create such dataset by concatenating the CBS dataset 10 times and multiply house prices with a random factor between 0.9 and 1.1 to introduce some variation. The decision tree regressor is fitted with <code>max_leaf_nodes</code> set to 50. This means that the zipcodes will be placed in 50 segments. To illustrate the effectiveness of this method, I show in-sample predictions for the most expensive (<a href="#tbl-expensive" class="quarto-xref">Table&nbsp;1</a>) and the least expensive areas (<a href="#tbl-cheap" class="quarto-xref">Table&nbsp;2</a>). The two tables show encoded mean house prices, the range of zipcodes, the number of zipcodes in that range (apparently not all possible values are used as zipcodes!) and the cities where these zipcodes are in. Clearly, the most expensive areas are much smaller and require a higher granularity of zipcode encoding than areas with lower house prices. Note how Amsterdam has even three distinct zipcode areas in the country top 10. If we use these in-sample generated zipcode encodings in our model, we would make the mistake of information leakage. The house price of each house would be used to generate a feature that is used to predict that same house price. This is where the Taxonomy Encoder comes into play.</p>
 <div class="cell" data-scrolled="true" data-tags="[]" data-execution_count="18">
+<div id="tbl-expensive" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-execution_count="18" data-tags="[]" data-scrolled="true">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-expensive-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Encoded zip codes for areas with most expensive houses
+</figcaption>
+<div aria-describedby="tbl-expensive-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output cell-output-display" data-execution_count="18">
 <div>
-<style scoped="">
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
 
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
 
-    .dataframe thead tr th {
-        text-align: left;
-    }
-
-    .dataframe thead tr:last-of-type th {
-        text-align: right;
-    }
-</style>
-
-<div id="tbl-expensive" class="anchored">
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<caption>Table&nbsp;1: Encoded zip codes for areas with most expensive houses</caption>
+<table class="dataframe do-not-create-environment cell caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th colspan="3" data-quarto-table-cell-role="th" data-halign="left">zipcode</th>
 <th data-quarto-table-cell-role="th">city</th>
 </tr>
-<tr class="odd">
+<tr class="even">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">min</th>
 <th data-quarto-table-cell-role="th">max</th>
@@ -275,70 +444,70 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">1,340,222</td>
+<th data-quarto-table-cell-role="th">1,340,222</th>
 <td>2243</td>
 <td>2244</td>
 <td>2</td>
 <td>[Wassenaar]</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1,276,450</td>
+<th data-quarto-table-cell-role="th">1,276,450</th>
 <td>2111</td>
 <td>2111</td>
 <td>1</td>
 <td>[Aerdenhout]</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">1,221,419</td>
+<th data-quarto-table-cell-role="th">1,221,419</th>
 <td>1077</td>
 <td>1077</td>
 <td>1</td>
 <td>[Amsterdam]</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1,138,075</td>
+<th data-quarto-table-cell-role="th">1,138,075</th>
 <td>1358</td>
 <td>1358</td>
 <td>1</td>
 <td>[Almere]</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">1,015,257</td>
+<th data-quarto-table-cell-role="th">1,015,257</th>
 <td>1071</td>
 <td>1071</td>
 <td>1</td>
 <td>[Amsterdam]</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">995,357</td>
+<th data-quarto-table-cell-role="th">995,357</th>
 <td>3546</td>
 <td>3546</td>
 <td>1</td>
 <td>[Utrecht]</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">881,411</td>
+<th data-quarto-table-cell-role="th">881,411</th>
 <td>2051</td>
 <td>2061</td>
 <td>2</td>
 <td>[Overveen, Bloemendaal]</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">802,266</td>
+<th data-quarto-table-cell-role="th">802,266</th>
 <td>1026</td>
 <td>1028</td>
 <td>3</td>
 <td>[Amsterdam]</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">747,447</td>
+<th data-quarto-table-cell-role="th">747,447</th>
 <td>2106</td>
 <td>2106</td>
 <td>1</td>
 <td>[Heemstede]</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">691,614</td>
+<th data-quarto-table-cell-role="th">691,614</th>
 <td>1251</td>
 <td>1272</td>
 <td>6</td>
@@ -346,42 +515,32 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 </tr>
 </tbody>
 </table>
-</div>
 
 </div>
+</div>
+</div>
+</figure>
 </div>
 </div>
 <div class="cell" data-scrolled="true" data-tags="[]" data-execution_count="19">
+<div id="tbl-cheap" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-execution_count="19" data-tags="[]" data-scrolled="true">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-cheap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Encoded zip codes for areas with least expensive houses
+</figcaption>
+<div aria-describedby="tbl-cheap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output cell-output-display" data-execution_count="19">
 <div>
-<style scoped="">
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
 
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
 
-    .dataframe thead tr th {
-        text-align: left;
-    }
-
-    .dataframe thead tr:last-of-type th {
-        text-align: right;
-    }
-</style>
-
-<div id="tbl-cheap" class="anchored">
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<caption>Table&nbsp;2: Encoded zip codes for areas with least expensive houses</caption>
+<table class="dataframe do-not-create-environment cell caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th colspan="3" data-quarto-table-cell-role="th" data-halign="left">zipcode</th>
 <th data-quarto-table-cell-role="th">city</th>
 </tr>
-<tr class="odd">
+<tr class="even">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">min</th>
 <th data-quarto-table-cell-role="th">max</th>
@@ -398,70 +557,70 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">205,692</td>
+<th data-quarto-table-cell-role="th">205,692</th>
 <td>6369</td>
 <td>6511</td>
 <td>43</td>
 <td>[Heerlen, Simpelveld, Landgraaf, nan, Hoensbroek, Amstenrade, Oirsbeek, Doenrade, Brunssum, Merkelbeek, Schinveld, Jabeek, Bingelrade, Kerkrade, Eygelshoven, Nijmegen]</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">234,407</td>
+<th data-quarto-table-cell-role="th">234,407</th>
 <td>3066</td>
 <td>3119</td>
 <td>30</td>
 <td>[Rotterdam, Schiedam]</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">244,079</td>
+<th data-quarto-table-cell-role="th">244,079</th>
 <td>2511</td>
 <td>2547</td>
 <td>24</td>
 <td>[Den Haag]</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">247,141</td>
+<th data-quarto-table-cell-role="th">247,141</th>
 <td>9541</td>
 <td>9999</td>
 <td>254</td>
 <td>[Groningen, Lauwersoog, Hornhuizen, Vlagtwedde, Bourtange, Sellingen, Ter Apel, Ter Apelkanaal, Zandberg, Veelerveen, 2e Exloërmond, 1e Exloërmond, Exloërveen, Musselkanaal, Mussel, Vledderveen, O...</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">269,679</td>
+<th data-quarto-table-cell-role="th">269,679</th>
 <td>4331</td>
 <td>4707</td>
 <td>164</td>
 <td>[Terneuzen, Nieuw Namen, Kloosterzande, Steenbergen, Oud-Vossemeer, Middelburg, Nieuw- en Sint Joosland, Arnemuiden, Veere, Gapinge, Serooskerke, Vrouwenpolder, Oostkapelle, Domburg, Westkapelle, ...</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">281,335</td>
+<th data-quarto-table-cell-role="th">281,335</th>
 <td>8574</td>
 <td>9301</td>
 <td>336</td>
 <td>[Workum, Oosterend, Grou, Drachten, Bakhuizen, Elahuizen, Oudega, Kolderwolde, Hemelum, Sneek, Gaastmeer, Idzega, Sandfirden, Blauwhuis, Westhem, Abbega, Oosthem, Heeg, Hommerts, Jutrijp, Uitwelli...</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">283,546</td>
+<th data-quarto-table-cell-role="th">283,546</th>
 <td>5851</td>
 <td>6367</td>
 <td>218</td>
 <td>[Susteren, Geleen, Eys, Afferden L, Siebengewald, Bergen L, Well L, Wellerlooi, Wanssum, Geijsteren, Blitterswijck, Meerlo, Tienray, Swolgen, Broekhuizenvorst, Broekhuizen, Venlo, Tegelen, Steyl, ...</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">301,971</td>
+<th data-quarto-table-cell-role="th">301,971</th>
 <td>3121</td>
 <td>3443</td>
 <td>152</td>
 <td>[Hellevoetsluis, Numansdorp, Dordrecht, Schiedam, Vlaardingen, Maassluis, Hoek van Holland, Maasland, Rhoon, Poortugaal, Rozenburg, Hoogvliet Rotterdam, Pernis Rotterdam, Spijkenisse, Hekelingen, ...</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">307,961</td>
+<th data-quarto-table-cell-role="th">307,961</th>
 <td>3551</td>
 <td>3565</td>
 <td>10</td>
 <td>[Utrecht]</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">317,922</td>
+<th data-quarto-table-cell-role="th">317,922</th>
 <td>1273</td>
 <td>1357</td>
 <td>39</td>
@@ -469,17 +628,19 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 </tr>
 </tbody>
 </table>
-</div>
 
 </div>
+</div>
+</div>
+</figure>
 </div>
 </div>
 </section>
 <section id="taxonomy-encoder" class="level1">
 <h1>Taxonomy Encoder</h1>
 <p>The Taxonomy Encoder is a type of target encoder, as for example <a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.TargetEncoder.html#sklearn.preprocessing.TargetEncoder">implemented</a> in scikit-learn. A plain vanilla target encoder encodes a feature value by the target mean value for all samples within that category. When training a model, it’s important that out-of-sample target encodings are used to prevent information leakage. This is achieved by internal using cross-fitting and prediction. We’re going to apply the same logic in the Taxonomy Encoder. The difference with a normal target encoder is that we don’t take encode the feature by taking the mean of the target for all samples within the same category, but we take the decision tree prediction instead. By setting the maximum numer of leafs <code>max_leaf_nodes</code> we choose how many segments the decision tree will create. More nodes mean higher granularity but could also result in overfitting. When there are only a small amount of samples in a particular segment, we might want that segment to be merged with another segment; we set this by <code>min_samples_leaf</code> - again to avoid overfitting. The implementation of the Taxonomy Encoder is rather straightforward:</p>
-<div class="cell" data-execution_count="46">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.base <span class="im">import</span> TransformerMixin, BaseEstimator</span>
+<div id="f981140f-0060-4ff8-b148-1e50f27ba2f4" class="cell" data-execution_count="46">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.base <span class="im">import</span> TransformerMixin, BaseEstimator</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> cross_val_predict</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> DecisionTreeRegressor</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -508,12 +669,12 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 <span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.feature_names_</span>
 <span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get_feature_names_out(<span class="va">self</span>, input_features):</span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> [<span class="ss">f"txe_</span><span class="sc">{</span>x<span class="sc">}</span><span class="ss">"</span> <span class="cf">for</span> x <span class="kw">in</span> input_features]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> [<span class="ss">f"txe_</span><span class="sc">{</span>x<span class="sc">}</span><span class="ss">"</span> <span class="cf">for</span> x <span class="kw">in</span> input_features]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Note that we explicitly implement <code>fit_transform</code> and overwrite this method defined in the <code>TransformerMixin</code>. This is the place where we create out-of-sample predictions using scikit-learn’s <code>cross_val_predict</code> function. Let’s confirm it works as intended. We first fit the encoder to our dataframe and then transform. This results in in-sample predictions and this is not how it should be used when training a model, only for prediction of unseen samples.</p>
-<div class="cell" data-execution_count="21">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>te <span class="op">=</span> TaxonomyEncoder(<span class="dv">10</span>).fit(mapdf[[<span class="st">'zipcode'</span>]], mapdf[target])</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>te.transform(mapdf[[<span class="st">'zipcode'</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="c5a85dbb-4200-4cd9-81ec-b73d2a7fd6ba" class="cell" data-execution_count="21">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>te <span class="op">=</span> TaxonomyEncoder(<span class="dv">10</span>).fit(mapdf[[<span class="st">'zipcode'</span>]], mapdf[target])</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>te.transform(mapdf[[<span class="st">'zipcode'</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="21">
 <pre><code>array([[471522.07790419],
        [471522.07790419],
@@ -525,8 +686,8 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 </div>
 </div>
 <p>When fitting a model, the <code>fit_transform</code> method is called. Note how this results in slightly different values:</p>
-<div class="cell" data-execution_count="22">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>te.fit_transform(mapdf[[<span class="st">'zipcode'</span>]], mapdf[target])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="ea6c60d0-10e4-407f-89b6-cd5bb0611e9f" class="cell" data-execution_count="22">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>te.fit_transform(mapdf[[<span class="st">'zipcode'</span>]], mapdf[target])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="22">
 <pre><code>array([[470643.24618252],
        [470643.24618252],
@@ -538,21 +699,21 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 </div>
 </div>
 <p>Obviously, the Taxonomy Encoder only adds value when used in a model pipeline. Here we create a <code>ColumnTransformer</code> in which we let the <code>TaxonomyEncoder</code> operate on the zipcode feature and leave the other features untouched:</p>
-<div class="cell" data-scrolled="true" data-tags="[]" data-execution_count="23">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.compose <span class="im">import</span> ColumnTransformer</span>
+<div id="30cbee0e-062d-4b00-902c-1791e4f26fa6" class="cell" data-scrolled="true" data-tags="[]" data-execution_count="23">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.compose <span class="im">import</span> ColumnTransformer</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>transformer <span class="op">=</span> ColumnTransformer([</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'taxonomy'</span>, TaxonomyEncoder(max_leaf_nodes<span class="op">=</span><span class="dv">100</span>), [<span class="st">'zipcode'</span>]),</span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'numeric'</span>, <span class="st">'passthrough'</span>, other_features)</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>This transformer can now be used in a scikit-learn pipeline to preprocess features for a regression model, in this example a random forest regressor:</p>
-<div class="cell" data-execution_count="28">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> make_pipeline</span>
+<div id="295ad343-7e41-429c-bccf-1d5b5f65b029" class="cell" data-execution_count="28">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> make_pipeline</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>pipe <span class="op">=</span> make_pipeline(transformer, RandomForestRegressor())</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>pipe.fit(mapdf[[<span class="st">'zipcode'</span>]<span class="op">+</span>other_features], mapdf[target])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>pipe.fit(mapdf[[<span class="st">'zipcode'</span>]<span class="op">+</span>other_features], mapdf[target])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="28">
 <style>#sk-container-id-1 {color: black;background-color: white;}#sk-container-id-1 pre{padding: 0;}#sk-container-id-1 div.sk-toggleable {background-color: white;}#sk-container-id-1 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-1 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-1 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-1 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-1 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-1 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-1 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-1 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-1 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-1 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-1 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-1 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-1 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-1 div.sk-item {position: relative;z-index: 1;}#sk-container-id-1 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-1 div.sk-item::before, #sk-container-id-1 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-1 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-1 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-1 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-1 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-1 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-1 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-1 div.sk-label-container {text-align: center;}#sk-container-id-1 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-1 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-1" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>Pipeline(steps=[('columntransformer',
                  ColumnTransformer(transformers=[('taxonomy',
@@ -580,9 +741,9 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 </div>
 </div>
 <p>Thanks to the method <code>get_feature_names_out</code> in the TaxonomyEncoder, we can easily get feature importances per feature.</p>
-<div class="cell" data-execution_count="42">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">dict</span>(<span class="bu">zip</span>(pipe.steps[<span class="dv">0</span>][<span class="dv">1</span>].get_feature_names_out(),</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>         pipe.steps[<span class="op">-</span><span class="dv">1</span>][<span class="dv">1</span>].feature_importances_))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="e5674e7e-bab1-4afa-9eab-677eded87a5c" class="cell" data-execution_count="42">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">dict</span>(<span class="bu">zip</span>(pipe.steps[<span class="dv">0</span>][<span class="dv">1</span>].get_feature_names_out(),</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>         pipe.steps[<span class="op">-</span><span class="dv">1</span>][<span class="dv">1</span>].feature_importances_))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="42">
 <pre><code>{'taxonomy__txe_zipcode': 0.5783498842971975,
  'numeric__percentage_owner_occupied_homes': 0.111009480628988,
@@ -594,71 +755,99 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 <section id="hyperparameter-tuning" class="level1">
 <h1>Hyperparameter tuning</h1>
 <p>The TaxonomyEncoder introduces an additional hyperparameter to tune: the number of segments in which the zipcodes are combined. Below are plots of different values for <code>max_leaf_nodes</code> for encoding zipcodes in our house price prediction example. Notice how only a large number of leafs results in segmentation of the east side of the country.</p>
-<div id="fig-ih3" class="cell quarto-layout-panel" data-execution_count="34">
-<figure class="figure">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="cell-output cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-ih3-1" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="taxonomy_encoder_blog_files/figure-html/fig-ih3-output-1.png" class="img-fluid figure-img" data-ref-parent="fig-ih3"></p>
-<p></p><figcaption class="figure-caption">(a) 3 leafs</figcaption><p></p>
+<div id="fig-ih3" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ih3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="cell-output cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-ih3" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-ih3-1" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-ih3-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="taxonomy_encoder_blog_files/figure-html/fig-ih3-output-1.png" class="img-fluid figure-img" data-ref-parent="fig-ih3">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-ih3-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a) 3 leafs
+</figcaption>
 </figure>
 </div>
 </div>
-<div class="cell-output cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-ih3-2" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="taxonomy_encoder_blog_files/figure-html/fig-ih3-output-2.png" class="img-fluid figure-img" data-ref-parent="fig-ih3"></p>
-<p></p><figcaption class="figure-caption">(b) 10 leafs</figcaption><p></p>
-</figure>
+<div class="cell-output cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-ih3" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-ih3-2" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-ih3-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="taxonomy_encoder_blog_files/figure-html/fig-ih3-output-2.png" class="img-fluid figure-img" data-ref-parent="fig-ih3">
 </div>
-</div>
-</div>
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="cell-output cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-ih3-3" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="taxonomy_encoder_blog_files/figure-html/fig-ih3-output-3.png" class="img-fluid figure-img" data-ref-parent="fig-ih3"></p>
-<p></p><figcaption class="figure-caption">(c) 20 leafs</figcaption><p></p>
-</figure>
-</div>
-</div>
-<div class="cell-output cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-ih3-4" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="taxonomy_encoder_blog_files/figure-html/fig-ih3-output-4.png" class="img-fluid figure-img" data-ref-parent="fig-ih3"></p>
-<p></p><figcaption class="figure-caption">(d) 50 leafs</figcaption><p></p>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-ih3-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b) 10 leafs
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="cell-output cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-ih3-5" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="taxonomy_encoder_blog_files/figure-html/fig-ih3-output-5.png" class="img-fluid figure-img" data-ref-parent="fig-ih3"></p>
-<p></p><figcaption class="figure-caption">(e) 70 leafs</figcaption><p></p>
+<div class="quarto-layout-row">
+<div class="cell-output cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-ih3" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-ih3-3" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-ih3-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="taxonomy_encoder_blog_files/figure-html/fig-ih3-output-3.png" class="img-fluid figure-img" data-ref-parent="fig-ih3">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-ih3-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(c) 20 leafs
+</figcaption>
 </figure>
 </div>
 </div>
-<div class="cell-output cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-ih3-6" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="taxonomy_encoder_blog_files/figure-html/fig-ih3-output-6.png" class="img-fluid figure-img" data-ref-parent="fig-ih3"></p>
-<p></p><figcaption class="figure-caption">(f) 100 leafs</figcaption><p></p>
+<div class="cell-output cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-ih3" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-ih3-4" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-ih3-4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="taxonomy_encoder_blog_files/figure-html/fig-ih3-output-4.png" class="img-fluid figure-img" data-ref-parent="fig-ih3">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-ih3-4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(d) 50 leafs
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p></p><figcaption class="figure-caption">Figure&nbsp;3: Different granularity of taxonomy encoding</figcaption><p></p>
+<div class="quarto-layout-row">
+<div class="cell-output cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-ih3" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-ih3-5" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-ih3-5-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="taxonomy_encoder_blog_files/figure-html/fig-ih3-output-5.png" class="img-fluid figure-img" data-ref-parent="fig-ih3">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-ih3-5-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(e) 70 leafs
+</figcaption>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-ih3" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-ih3-6" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-ih3-6-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="taxonomy_encoder_blog_files/figure-html/fig-ih3-output-6.png" class="img-fluid figure-img" data-ref-parent="fig-ih3">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-ih3-6-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(f) 100 leafs
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ih3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Different granularity of taxonomy encoding
+</figcaption>
 </figure>
 </div>
 </section>
 <section id="taxonomy-encoder-for-binary-classification" class="level1">
 <h1>Taxonomy Encoder for binary classification</h1>
 <p>If you want to use the Taxonomy Encoder in a binary classification modelling exercise, only a few changes need to be made. The <code>DecisionTreeRegressor</code> should be replaced with a <code>DecisionTreeClassifier</code>. The <code>cross_val_predict</code> function should be called with <code>method='predict_proba'</code> and only the positive class probabilities should be retrieved:</p>
-<div class="cell" data-execution_count="45">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.base <span class="im">import</span> TransformerMixin, BaseEstimator</span>
+<div id="4c68d218-9490-4210-b8d7-68f115fabb15" class="cell" data-execution_count="45">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.base <span class="im">import</span> TransformerMixin, BaseEstimator</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> cross_val_predict</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> DecisionTreeClassifier</span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -688,7 +877,7 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 <span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.feature_names_</span>
 <span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get_feature_names_out(<span class="va">self</span>, input_features):</span>
-<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> [<span class="ss">f"txe_</span><span class="sc">{</span>x<span class="sc">}</span><span class="ss">"</span> <span class="cf">for</span> x <span class="kw">in</span> input_features]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> [<span class="ss">f"txe_</span><span class="sc">{</span>x<span class="sc">}</span><span class="ss">"</span> <span class="cf">for</span> x <span class="kw">in</span> input_features]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="final-remark" class="level1">
@@ -700,158 +889,71 @@ gtag('config', 'G-DEDM5V9GGM', { 'anonymize_ip': true});
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
-window.document.addEventListener("DOMContentLoaded", function (event) {
-  const toggleBodyColorMode = (bsSheetEl) => {
-    const mode = bsSheetEl.getAttribute("data-mode");
-    const bodyEl = window.document.querySelector("body");
-    if (mode === "dark") {
-      bodyEl.classList.add("quarto-dark");
-      bodyEl.classList.remove("quarto-light");
-    } else {
-      bodyEl.classList.add("quarto-light");
-      bodyEl.classList.remove("quarto-dark");
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
     }
-  }
-  const toggleBodyColorPrimary = () => {
-    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
-    if (bsSheetEl) {
-      toggleBodyColorMode(bsSheetEl);
-    }
-  }
-  toggleBodyColorPrimary();  
-  const disableStylesheet = (stylesheets) => {
-    for (let i=0; i < stylesheets.length; i++) {
-      const stylesheet = stylesheets[i];
-      stylesheet.rel = 'prefetch';
-    }
-  }
-  const enableStylesheet = (stylesheets) => {
-    for (let i=0; i < stylesheets.length; i++) {
-      const stylesheet = stylesheets[i];
-      stylesheet.rel = 'stylesheet';
-    }
-  }
-  const manageTransitions = (selector, allowTransitions) => {
-    const els = window.document.querySelectorAll(selector);
-    for (let i=0; i < els.length; i++) {
-      const el = els[i];
-      if (allowTransitions) {
-        el.classList.remove('notransition');
-      } else {
-        el.classList.add('notransition');
-      }
-    }
-  }
-  const toggleColorMode = (alternate) => {
-    // Switch the stylesheets
-    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
-    manageTransitions('#quarto-margin-sidebar .nav-link', false);
-    if (alternate) {
-      enableStylesheet(alternateStylesheets);
-      for (const sheetNode of alternateStylesheets) {
-        if (sheetNode.id === "quarto-bootstrap") {
-          toggleBodyColorMode(sheetNode);
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
         }
       }
-    } else {
-      disableStylesheet(alternateStylesheets);
-      toggleBodyColorPrimary();
-    }
-    manageTransitions('#quarto-margin-sidebar .nav-link', true);
-    // Switch the toggles
-    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
-    for (let i=0; i < toggles.length; i++) {
-      const toggle = toggles[i];
-      if (toggle) {
-        if (alternate) {
-          toggle.classList.add("alternate");     
-        } else {
-          toggle.classList.remove("alternate");
-        }
-      }
-    }
-    // Hack to workaround the fact that safari doesn't
-    // properly recolor the scrollbar when toggling (#1455)
-    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
-      manageTransitions("body", false);
-      window.scrollTo(0, 1);
-      setTimeout(() => {
-        window.scrollTo(0, 0);
-        manageTransitions("body", true);
-      }, 40);  
-    }
-  }
-  const isFileUrl = () => { 
-    return window.location.protocol === 'file:';
-  }
-  const hasAlternateSentinel = () => {  
-    let styleSentinel = getColorSchemeSentinel();
-    if (styleSentinel !== null) {
-      return styleSentinel === "alternate";
-    } else {
       return false;
     }
-  }
-  const setStyleSentinel = (alternate) => {
-    const value = alternate ? "alternate" : "default";
-    if (!isFileUrl()) {
-      window.localStorage.setItem("quarto-color-scheme", value);
-    } else {
-      localAlternateSentinel = value;
-    }
-  }
-  const getColorSchemeSentinel = () => {
-    if (!isFileUrl()) {
-      const storageValue = window.localStorage.getItem("quarto-color-scheme");
-      return storageValue != null ? storageValue : localAlternateSentinel;
-    } else {
-      return localAlternateSentinel;
-    }
-  }
-  let localAlternateSentinel = 'default';
-  // Dark / light mode switch
-  window.quartoToggleColorScheme = () => {
-    // Read the current dark / light value 
-    let toAlternate = !hasAlternateSentinel();
-    toggleColorMode(toAlternate);
-    setStyleSentinel(toAlternate);
-  };
-  // Ensure there is a toggle, if there isn't float one in the top right
-  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
-    const a = window.document.createElement('a');
-    a.classList.add('top-right');
-    a.classList.add('quarto-color-scheme-toggle');
-    a.href = "";
-    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
-    const i = window.document.createElement("i");
-    i.classList.add('bi');
-    a.appendChild(i);
-    window.document.body.appendChild(a);
-  }
-  // Switch to dark mode if need be
-  if (hasAlternateSentinel()) {
-    toggleColorMode(true);
-  } else {
-    toggleColorMode(false);
-  }
-  const icon = "";
-  const anchorJS = new window.AnchorJS();
-  anchorJS.options = {
-    placement: 'right',
-    icon: icon
-  };
-  anchorJS.add('.anchored');
-  const isCodeAnnotation = (el) => {
-    for (const clz of el.classList) {
-      if (clz.startsWith('code-annotation-')) {                     
-        return true;
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
       }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
     }
-    return false;
-  }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
       for (const childEl of codeEl.children) {
         if (isCodeAnnotation(childEl)) {
           childEl.remove();
@@ -859,195 +961,348 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       }
       return codeEl.innerText;
     }
-  });
-  clipboard.on('success', function(e) {
-    // button target
-    const button = e.trigger;
-    // don't keep focus
-    button.blur();
-    // flash "checked"
-    button.classList.add('code-copy-button-checked');
-    var currentTitle = button.getAttribute("title");
-    button.setAttribute("title", "Copied!");
-    let tooltip;
-    if (window.bootstrap) {
-      button.setAttribute("data-bs-toggle", "tooltip");
-      button.setAttribute("data-bs-placement", "left");
-      button.setAttribute("data-bs-title", "Copied!");
-      tooltip = new bootstrap.Tooltip(button, 
-        { trigger: "manual", 
-          customClass: "code-copy-button-tooltip",
-          offset: [0, -8]});
-      tooltip.show();    
-    }
-    setTimeout(function() {
-      if (tooltip) {
-        tooltip.hide();
-        button.removeAttribute("data-bs-title");
-        button.removeAttribute("data-bs-toggle");
-        button.removeAttribute("data-bs-placement");
-      }
-      button.setAttribute("title", currentTitle);
-      button.classList.remove('code-copy-button-checked');
-    }, 1000);
-    // clear code selection
-    e.clearSelection();
-  });
-  function tippyHover(el, contentFn) {
-    const config = {
-      allowHTML: true,
-      content: contentFn,
-      maxWidth: 500,
-      delay: 100,
-      arrow: false,
-      appendTo: function(el) {
-          return el.parentElement;
-      },
-      interactive: true,
-      interactiveBorder: 10,
-      theme: 'quarto',
-      placement: 'bottom-start'
-    };
-    window.tippy(el, config); 
-  }
-  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-  for (var i=0; i<noterefs.length; i++) {
-    const ref = noterefs[i];
-    tippyHover(ref, function() {
-      // use id or data attribute instead here
-      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-      try { href = new URL(href).hash; } catch {}
-      const id = href.replace(/^#\/?/, "");
-      const note = window.document.getElementById(id);
-      return note.innerHTML;
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
     });
-  }
-      let selectedAnnoteEl;
-      const selectorForAnnotation = ( cell, annotation) => {
-        let cellAttr = 'data-code-cell="' + cell + '"';
-        let lineAttr = 'data-code-annotation="' +  annotation + '"';
-        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
-        return selector;
-      }
-      const selectCodeLines = (annoteEl) => {
-        const doc = window.document;
-        const targetCell = annoteEl.getAttribute("data-target-cell");
-        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
-        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
-        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
-        const lineIds = lines.map((line) => {
-          return targetCell + "-" + line;
-        })
-        let top = null;
-        let height = null;
-        let parent = null;
-        if (lineIds.length > 0) {
-            //compute the position of the single el (top and bottom and make a div)
-            const el = window.document.getElementById(lineIds[0]);
-            top = el.offsetTop;
-            height = el.offsetHeight;
-            parent = el.parentElement.parentElement;
-          if (lineIds.length > 1) {
-            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
-            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
-            height = bottom - top;
-          }
-          if (top !== null && height !== null && parent !== null) {
-            // cook up a div (if necessary) and position it 
-            let div = window.document.getElementById("code-annotation-line-highlight");
-            if (div === null) {
-              div = window.document.createElement("div");
-              div.setAttribute("id", "code-annotation-line-highlight");
-              div.style.position = 'absolute';
-              parent.appendChild(div);
-            }
-            div.style.top = top - 2 + "px";
-            div.style.height = height + 4 + "px";
-            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
-            if (gutterDiv === null) {
-              gutterDiv = window.document.createElement("div");
-              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
-              gutterDiv.style.position = 'absolute';
-              const codeCell = window.document.getElementById(targetCell);
-              const gutter = codeCell.querySelector('.code-annotation-gutter');
-              gutter.appendChild(gutterDiv);
-            }
-            gutterDiv.style.top = top - 2 + "px";
-            gutterDiv.style.height = height + 4 + "px";
-          }
-          selectedAnnoteEl = annoteEl;
-        }
-      };
-      const unselectCodeLines = () => {
-        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
-        elementsIds.forEach((elId) => {
-          const div = window.document.getElementById(elId);
-          if (div) {
-            div.remove();
-          }
-        });
-        selectedAnnoteEl = undefined;
-      };
-      // Attach click handler to the DT
-      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
-      for (const annoteDlNode of annoteDls) {
-        annoteDlNode.addEventListener('click', (event) => {
-          const clickedEl = event.target;
-          if (clickedEl !== selectedAnnoteEl) {
-            unselectCodeLines();
-            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
-            if (activeEl) {
-              activeEl.classList.remove('code-annotation-active');
-            }
-            selectCodeLines(clickedEl);
-            clickedEl.classList.add('code-annotation-active');
-          } else {
-            // Unselect the line
-            unselectCodeLines();
-            clickedEl.classList.remove('code-annotation-active');
-          }
-        });
-      }
-  const findCites = (el) => {
-    const parentEl = el.parentElement;
-    if (parentEl) {
-      const cites = parentEl.dataset.cites;
-      if (cites) {
-        return {
-          el,
-          cites: cites.split(' ')
-        };
-      } else {
-        return findCites(el.parentElement)
-      }
-    } else {
-      return undefined;
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
     }
-  };
-  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-  for (var i=0; i<bibliorefs.length; i++) {
-    const ref = bibliorefs[i];
-    const citeInfo = findCites(ref);
-    if (citeInfo) {
-      tippyHover(citeInfo.el, function() {
-        var popup = window.document.createElement('div');
-        citeInfo.cites.forEach(function(cite) {
-          var citeDiv = window.document.createElement('div');
-          citeDiv.classList.add('hanging-indent');
-          citeDiv.classList.add('csl-entry');
-          var biblioDiv = window.document.getElementById('ref-' + cite);
-          if (biblioDiv) {
-            citeDiv.innerHTML = biblioDiv.innerHTML;
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
           }
-          popup.appendChild(citeDiv);
-        });
-        return popup.innerHTML;
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
       });
     }
-  }
-});
-</script>
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
 </div> <!-- /content -->
+
 
 
 
